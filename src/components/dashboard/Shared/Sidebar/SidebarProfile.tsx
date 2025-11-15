@@ -30,8 +30,10 @@ const SidebarProfile = ({ user }: { user: TUser }) => {
   };
 
   const userNameInArray = user?.name?.split(" ");
-  const fullname =
-    userNameInArray[0] + " " + userNameInArray[1] ? userNameInArray[1] : "";
+  const fullname = `${userNameInArray[0]}${
+    userNameInArray[1] ? ` ${userNameInArray[1]}` : ""
+  }`;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

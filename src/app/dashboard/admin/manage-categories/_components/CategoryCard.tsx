@@ -1,10 +1,10 @@
 "use client";
 
+import MyImage from "@/components/shared/Ui/Image/MyImage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TCategory, TSubCategory } from "@/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import DeleteCategory from "./DeleteCategory";
 import UpdateCategory from "./UpdateCategory";
@@ -21,7 +21,7 @@ const CategoryCard = ({ category }: { category: TCategory }) => {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             <div className="relative h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-              <Image
+              <MyImage
                 src={category.image}
                 alt={category.name}
                 fill

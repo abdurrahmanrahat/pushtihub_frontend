@@ -16,7 +16,7 @@ const CategoriesLists = async () => {
         />
       ) : (
         <>
-          {categoriesResponse?.data?.data?.length === 0 ? (
+          {categoriesResponse?.data?.length === 0 ? (
             <NoDataFoundBySearchFilter
               title="Categories not found!"
               description="Try searching for something else or clear all filters to explore available collections."

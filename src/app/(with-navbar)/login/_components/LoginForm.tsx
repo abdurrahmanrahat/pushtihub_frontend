@@ -64,8 +64,8 @@ const LoginForm = () => {
       onSubmit={handleLogin}
       schema={userLoginSchema}
       defaultValues={{
-        email: "admin@gmail.com",
-        password: "admin123",
+        email: "",
+        password: "",
       }}
     >
       <div className="flex flex-col gap-4">
