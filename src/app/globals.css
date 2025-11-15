@@ -5,9 +5,9 @@
 
 @theme {
   /* make it 100 - 900 variants for primary color */
-  --color-primary: #DD3333;
+  --color-primary: #06923e;
+  --color-secondary: #058338;
   --color-light-gray: #F1F1F1;
-  --color-secondary: #c72e2e;
   --color-deep-dark: #0f151d;
   --color-destructive: #EF4343;
 
@@ -133,12 +133,12 @@ textarea::-moz-selection {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c2c1d0;
+  background: #51b378;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #c2c1d0;
+  background: #38a865;
 }
 
 

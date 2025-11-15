@@ -14,35 +14,27 @@ type TSlide = {
   description: string;
   image: string;
   buttonText: string;
+  href: string;
 };
 
 const slides: TSlide[] = [
   {
     id: 1,
-    title: "Apple iPhone 14 Series",
-    subtitle: "Up to 10% Off",
-    description: "Exclusive voucher on latest iPhones",
-    image:
-      "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=900&h=600&fit=crop",
+    title: "Peanut Margarita",
+    subtitle: "Up to 30% Off",
+    description: "Exclusive voucher on latest Peanut",
+    image: "/images/home/banner/peanut.png",
     buttonText: "Shop Now",
+    href: "#",
   },
   {
     id: 2,
-    title: "Latest Smartphones",
+    title: "Honey Combo Pack",
     subtitle: "Up to 15% Off",
-    description: "Hot deals on flagship models",
-    image:
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=900&h=600&fit=crop",
+    description: "Hot deals on fresh honey",
+    image: "/images/home/banner/honey-combo.png",
     buttonText: "Shop Now",
-  },
-  {
-    id: 3,
-    title: "Premium Audio",
-    subtitle: "Up to 20% Off",
-    description: "Discounts on top-notch headphones",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=900&h=600&fit=crop",
-    buttonText: "Shop Now",
+    href: "#",
   },
 ];
 
