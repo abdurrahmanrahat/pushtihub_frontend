@@ -1,0 +1,49 @@
+.swiper-button-prev,
+.swiper-button-next {
+    width: 16px !important;
+    /* container width */
+    height: 16px !important;
+    /* container height */
+    background-color: transparent;
+    font-weight: bold;
+    /* optional */
+    color: #DD3333 !important;
+    /* arrow color */
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 16px !important;
+    /* actual arrow size */
+    font-weight: 800 !important;
+}
+
+.swiper-button-prev {
+    margin-left: -8px !important;
+}
+
+.swiper-button-next {
+    margin-right: -8px !important;
+}
+
+.swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    /* normal gray */
+    border-radius: 50%;
+    margin: 0 4px;
+    opacity: 1;
+    /* transition: background-color 0.3s, transform 0.3s; */
+}
+
+/* Active bullet */
+.swiper-pagination-bullet-active {
+    background-color: #DD3333 !important;
+    /* your brand color */
+    transform: scale(1.1);
+    /* optional: make active bullet bigger */
+}
+
+.swiper-pagination-bullets {
+    bottom: -4px !important;
+}

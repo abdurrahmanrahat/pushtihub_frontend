@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* make it 100 - 900 variants for primary color */
+  --color-primary: #DD3333;
+  --color-light-gray: #F1F1F1;
+  --color-secondary: #c72e2e;
+  --color-deep-dark: #0f151d;
+  --color-destructive: #EF4343;
+
+  --shadow-cardLightShadow: rgba(100, 100, 111, 0.1) 0px 7px 29px 0px;
+  --shadow-cardDarkShadow: rgba(0, 0, 0, 0.6) 0px 7px 29px 0px;
+  --shadow-topUpShadow: 0 5px 20px rgba(0, 0, 0, .2)
+}
+
+@layer utilities {
+
+  /* Text Colors */
+  .text-foreground {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+
+  .text-muted-foreground {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  /* Backgrounds */
+  .bg-muted {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  /* Borders */
+  .border-muted {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  .border-border {
+    @apply border-gray-300 dark:border-gray-700;
+  }
+
+  .section-space-for-shadow {
+    @apply py-4 px-[6px] md:px-3
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+/* for text editor */
+.html-content h1 {
+  @apply text-2xl font-semibold leading-5 mb-2;
+}
+
+.html-content h2 {
+  @apply text-xl font-semibold leading-5 mb-2;
+}
+
+.html-content h3 {
+  @apply text-lg font-semibold leading-5 mb-2
+}
+
+.html-content h4 {
+  @apply text-[17px] font-medium leading-5 mb-2;
+}
+
+.html-content h5 {
+  @apply text-base font-medium leading-5 mb-2;
+}
+
+.html-content h6 {
+  @apply text-sm font-medium leading-5 mb-2;
+}
+
+.html-content p {
+  @apply text-[15px];
+}
+
+p:empty {
+  min-height: 1rem;
+  display: block;
+}
+
+/* Light and dark mode text selection for input fields */
+input::selection {
+  background-color: var(--color-primary);
+  /* Your primary or accent color */
+  color: #ffffff;
+  /* White text */
+}
+
+input::-moz-selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Optional: textarea too */
+textarea::selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+textarea::-moz-selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* scrollbar design */
+/* For WebKit browsers (Chrome, Safari, newer versions of Opera) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c2c1d0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c2c1d0;
+}
+
+
+/* scroll-hidden */
+.scroll-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
