@@ -1,5 +1,6 @@
 "use client";
 
+import MyLogo from "@/components/shared/Ui/MyLogo";
 import { TUser } from "@/types";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -56,11 +57,8 @@ export default function DashboardNavbar({
         <div className="lg:hidden">
           <div className="w-[90%] mx-auto flex justify-between items-center py-4">
             <div>
-              <Link href="/">
-                {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
-                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                  Pushtihub
-                </span>
+              <Link href={`/`}>
+                <MyLogo width={160} height={100} />
               </Link>
             </div>
 

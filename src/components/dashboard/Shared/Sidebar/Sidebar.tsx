@@ -1,5 +1,6 @@
 "use client";
 
+import MyLogo from "@/components/shared/Ui/MyLogo";
 import { TUser } from "@/types";
 import Link from "next/link";
 import { SidebarItem } from "./Sidebar.helpers";
@@ -12,11 +13,8 @@ const Sidebar = ({ role, user }: { role: "user" | "admin"; user: TUser }) => {
       <div className="relative h-full w-full py-10 px-3 2xl:px-4">
         {/* logo section */}
         <div className="flex justify-center items-center">
-          <Link href="/">
-            {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
-            <span className="font-bold text-xl 2xl:text-2xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-              Pushtihub
-            </span>
+          <Link href={`/`}>
+            <MyLogo width={160} height={100} />
           </Link>
         </div>
 

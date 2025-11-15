@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Container from "../Container";
+import MyLogo from "../MyLogo";
 
 const quickLinks = [
   { label: "About us", href: "/about" },
@@ -48,10 +49,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 pb-10">
           {/* Company Info */}
           <div className="space-y-4">
-            <Link href="/">
-              <span className="font-bold text-xl 2xl:text-2xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                Pushtihub
-              </span>
+            <Link href={`/`}>
+              <MyLogo width={160} height={100} />
             </Link>
 
             <p className="text-muted-foreground leading-relaxed text-sm 2xl:text-base">
