@@ -4,7 +4,8 @@ import { TCategory } from "@/types";
 import { Metadata } from "next";
 import Link from "next/link";
 import { MdKeyboardBackspace } from "react-icons/md";
-import AddProductForm from "./_components/AddProductForm";
+import AddProductForm from "./_components/AddProductForm2";
+// import AddProductForm from "./_components/AddProductForm";
 
 export const metadata: Metadata = {
   title: "Add Product > Dashboard | Pushtihub",

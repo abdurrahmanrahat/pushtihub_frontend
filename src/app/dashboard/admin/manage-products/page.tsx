@@ -138,7 +138,7 @@ const ManageProductsPage = async (props: {
                       <TableRow className="">
                         <TableHead className="">Product Name</TableHead>
                         <TableHead>Price</TableHead>
-                        <TableHead>Stock</TableHead>
+                        {/* <TableHead>Stock</TableHead> */}
                         <TableHead>Category</TableHead>
                         <TableHead>Rating</TableHead>
                         <TableHead className="text-center">Action</TableHead>
@@ -170,9 +170,16 @@ const ManageProductsPage = async (props: {
                             </TableCell>
 
                             <TableCell className="font-medium">
-                              ${product.sellingPrice.toFixed(2)}
+                              <div className="flex gap-1 items-center">
+                                <span className="text-primary">
+                                  ৳{product.variants[0].items[0].sellingPrice}
+                                </span>
+                                <span>
+                                  ({product.variants[0].items[0].value})
+                                </span>
+                              </div>
                             </TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                               <div className="text-sm 2xl:text-base">
                                 <p className="text-muted-foreground">
                                   {product.stock} Item Left
@@ -181,7 +188,7 @@ const ManageProductsPage = async (props: {
                                   {product.salesCount} Sold
                                 </p>
                               </div>
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell className="text-sm text-foreground whitespace-normal">
                               <span className="max-w-[80px] leading-snug break-words line-clamp-2">
                                 {slugToTitle(product.category)}
