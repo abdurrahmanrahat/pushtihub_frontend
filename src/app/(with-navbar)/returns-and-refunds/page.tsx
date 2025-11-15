@@ -8,9 +8,8 @@ import ReturnPolicy from "./_components/ReturnPolicy";
 import ReturnProcess from "./_components/ReturnProcess";
 
 export const metadata: Metadata = {
-  title: "Returns & Refunds | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Returns & Refunds | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const ReturnsAndRefundsPage = () => {
@@ -19,7 +18,7 @@ const ReturnsAndRefundsPage = () => {
       <Banner
         bgImage="/images/banners/returns-and-refunds-banner.jpg"
         title="Returns & Refunds"
-        description="Gadgetoria ensures a simple and transparent return and refund process for your satisfaction."
+        description="Pushtihub ensures a simple and transparent return and refund process for your satisfaction."
         breadcrumbs={[
           { label: "Returns & Refunds", href: "/returns-and-refunds" },
         ]}
@@ -32,7 +31,7 @@ const ReturnsAndRefundsPage = () => {
             <CardContent className="">
               <p className="text-muted-foreground text-justify">
                 We want you to be completely satisfied with your purchase from
-                Gadgetoria. If you&apos;re not happy with your order for any
+                Pushtihub. If you&apos;re not happy with your order for any
                 reason, we offer a hassle-free 30-day return policy. Please
                 review the details below to understand our return and refund
                 process.

@@ -59,7 +59,7 @@ export default function DashboardNavbar({
               <Link href="/">
                 {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
                 <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                  Gadgetoria
+                  Pushtihub
                 </span>
               </Link>
             </div>
@@ -87,7 +87,7 @@ export default function DashboardNavbar({
                 {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
 
                 <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                  Gadgetoria
+                  Pushtihub
                 </span>
               </Link>
             </div>

@@ -4,9 +4,8 @@ import { Metadata } from "next";
 import { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const CommonLayout = ({ children }: { children: ReactNode }) => {

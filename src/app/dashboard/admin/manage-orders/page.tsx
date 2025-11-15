@@ -22,9 +22,8 @@ import OrdersStatus from "./_components/OrdersStatus";
 import OrderStatusUpdateModal from "./_components/OrderStatusUpdateModal";
 
 export const metadata: Metadata = {
-  title: "Manage Orders > Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Manage Orders > Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 type TManageOrdersPageParams = {

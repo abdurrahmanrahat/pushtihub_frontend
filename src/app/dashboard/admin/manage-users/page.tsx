@@ -1,9 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Manage Users > Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Manage Users > Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const ManageUsers = () => {

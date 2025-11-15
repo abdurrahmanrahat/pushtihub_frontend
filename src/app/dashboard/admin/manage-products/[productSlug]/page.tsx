@@ -9,9 +9,8 @@ import { MdKeyboardBackspace } from "react-icons/md";
 import EditProductForm from "./_component/EditProductForm";
 
 export const metadata: Metadata = {
-  title: "Edit Product > Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Edit Product > Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const ManageProductEditPage = async (props: {

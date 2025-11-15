@@ -4,7 +4,7 @@ const CompanyStory = () => {
       <h2 className="text-3xl font-semibold text-foreground mb-6">Our Story</h2>
       <div className="space-y-4 text-muted-foreground leading-relaxed">
         <p>
-          Founded in 2020, Gadgetoria emerged from a simple vision: to make
+          Founded in 2020, Pushtihub emerged from a simple vision: to make
           premium technology accessible to everyone. What started as a small
           online store has grown into a trusted destination for tech
           enthusiasts, professionals, and everyday users seeking quality gadgets
@@ -18,7 +18,7 @@ const CompanyStory = () => {
           standards for quality, functionality, and value.
         </p>
         <p>
-          Today, Gadgetoria serves thousands of satisfied customers across the
+          Today, Pushtihub serves thousands of satisfied customers across the
           globe, offering everything from cutting-edge laptops and keyboards to
           innovative accessories and smart devices. Our commitment to
           excellence, combined with exceptional customer service, has made us a

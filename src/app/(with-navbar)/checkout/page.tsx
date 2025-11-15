@@ -4,9 +4,8 @@ import { CheckoutSteps } from "../../../components/common/Cart/CheckoutSteps";
 import BillingDetails from "./_components/BillingDetails";
 
 export const metadata: Metadata = {
-  title: "Checkout | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Checkout | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 export default function CheckoutPage() {

@@ -3,9 +3,8 @@ import { ReactNode } from "react";
 import UserLayout from "./layout/UserLayout";
 
 export const metadata: Metadata = {
-  title: "User Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "User Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const UserDashboardLayout = ({ children }: { children: ReactNode }) => {

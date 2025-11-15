@@ -50,7 +50,7 @@ const Footer = () => {
           <div className="space-y-4">
             <Link href="/">
               <span className="font-bold text-xl 2xl:text-2xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                Gadgetoria
+                Pushtihub
               </span>
             </Link>
 
@@ -139,10 +139,10 @@ const Footer = () => {
               <li className="flex items-center group">
                 <Mail className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
                 <a
-                  href="mailto:support@gadgetoria.com"
+                  href="mailto:support@Pushtihub.com"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm 2xl:text-base"
                 >
-                  support@gadgetoria.com
+                  support@Pushtihub.com
                 </a>
               </li>
             </ul>
@@ -152,7 +152,7 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-gray-200 dark:border-gray-800 py-5">
         <p className="text-center text-muted-foreground text-sm 2xl:text-base">
-          © {new Date().getFullYear()} Gadgetoria. All rights reserved.
+          © {new Date().getFullYear()} Pushtihub. All rights reserved.
         </p>
       </div>
     </footer>

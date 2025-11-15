@@ -24,12 +24,12 @@ export const InvoiceDownloadButton = ({ order }: TInvoiceButtonProps) => {
         {
           columns: [
             [
-              { text: "Gadgetoria", style: "shopName" },
+              { text: "Pushtihub", style: "shopName" },
               {
                 text: "Smart, Affordable & Problem-Solving Products",
                 style: "subText",
               },
-              { text: "Email: support@gadgetoria.com", style: "subText" },
+              { text: "Email: support@Pushtihub.com", style: "subText" },
               {
                 text: "Phone: +880-1788888888",
                 style: "subText",
@@ -125,7 +125,7 @@ export const InvoiceDownloadButton = ({ order }: TInvoiceButtonProps) => {
           layout: "lightHorizontalLines",
         },
         {
-          text: "\nThank you for shopping with Gadgetoria!",
+          text: "\nThank you for shopping with Pushtihub!",
           alignment: "center",
           margin: [0, 20, 0, 0],
           italics: true,

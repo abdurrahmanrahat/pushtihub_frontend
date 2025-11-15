@@ -13,9 +13,8 @@ import MobileFilterToggle from "./_components/MobileFilterToggle";
 import { ProductCard } from "./_components/ProductCard";
 
 export const metadata: Metadata = {
-  title: "Shop | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Shop | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 type TShopPageParams = {

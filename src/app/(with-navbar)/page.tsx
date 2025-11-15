@@ -5,9 +5,8 @@ import HeroBanner from "./_components/HeroBanner/HeroBanner";
 import RecentProducts from "./_components/RecentProducts/RecentProducts";
 
 export const metadata: Metadata = {
-  title: "Home | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Home | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 export default function HomePage() {

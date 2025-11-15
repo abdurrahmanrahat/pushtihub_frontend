@@ -3,9 +3,8 @@ import AddCategory from "./_components/AddCategory";
 import CategoriesLists from "./_components/CategoriesLists";
 
 export const metadata: Metadata = {
-  title: "Manage Categories > Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Manage Categories > Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const ManageCategoriesPage = () => {

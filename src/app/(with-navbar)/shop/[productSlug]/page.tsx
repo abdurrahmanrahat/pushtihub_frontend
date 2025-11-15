@@ -40,7 +40,7 @@ export async function generateMetadata(props: {
   );
 
   return {
-    title: `${singleProductResponse?.data?.name} | Gadgetoria`,
+    title: `${singleProductResponse?.data?.name} | Pushtihub`,
     description: plainDescription,
     openGraph: {
       title: singleProductResponse?.data?.name,

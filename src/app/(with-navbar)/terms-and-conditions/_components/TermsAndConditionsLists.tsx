@@ -1,7 +1,7 @@
 const sections = [
   {
     title: "Acceptance of Terms",
-    content: `By accessing and using the Gadgetoria website (the "Site"), you accept and agree to be bound by 
+    content: `By accessing and using the Pushtihub website (the "Site"), you accept and agree to be bound by 
       these Terms and Conditions. If you do not agree to these terms, please do not use our Site. We reserve the 
       right to modify these terms at any time, and your continued use of the Site constitutes acceptance of any 
       changes.`,
@@ -29,7 +29,7 @@ const sections = [
   },
   {
     title: "Orders and Payment",
-    content: `All orders are subject to acceptance by Gadgetoria. We reserve the right to refuse or cancel any 
+    content: `All orders are subject to acceptance by Pushtihub. We reserve the right to refuse or cancel any 
       order for any reason, including but not limited to product availability, errors in pricing or product 
       information, or suspected fraudulent activity. Payment must be received before we dispatch your order. We 
       accept various payment methods as indicated on the Site.`,
@@ -50,19 +50,19 @@ const sections = [
   {
     title: "Intellectual Property",
     content: `All content on the Site, including text, graphics, logos, images, software, and other materials, is 
-      the property of Gadgetoria or its content suppliers and is protected by intellectual property laws. You may not 
+      the property of Pushtihub or its content suppliers and is protected by intellectual property laws. You may not 
       reproduce, distribute, modify, or create derivative works of any content without our express written permission.`,
   },
   {
     title: "User Content",
     content: `You may have the opportunity to submit reviews, comments, or other content to the Site. You grant 
-      Gadgetoria a non-exclusive, royalty-free, perpetual, irrevocable right to use, reproduce, modify, adapt, 
+      Pushtihub a non-exclusive, royalty-free, perpetual, irrevocable right to use, reproduce, modify, adapt, 
       publish, and display such content. You represent that you own or have the necessary rights to any content you 
       submit and that it does not violate any third-party rights.`,
   },
   {
     title: "Limitation of Liability",
-    content: `To the fullest extent permitted by law, Gadgetoria shall not be liable for any indirect, incidental, 
+    content: `To the fullest extent permitted by law, Pushtihub shall not be liable for any indirect, incidental, 
       special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or 
       indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of the Site 
       or products purchased through the Site.`,
@@ -75,7 +75,7 @@ const sections = [
   },
   {
     title: "Indemnification",
-    content: `You agree to indemnify, defend, and hold harmless Gadgetoria and its officers, directors, employees, 
+    content: `You agree to indemnify, defend, and hold harmless Pushtihub and its officers, directors, employees, 
       and agents from any claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, 
       arising out of or in any way connected with your access to or use of the Site, your violation of these Terms, 
       or your violation of any third-party rights.`,
@@ -83,7 +83,7 @@ const sections = [
   {
     title: "Third-Party Links",
     content: `The Site may contain links to third-party websites or services that are not owned or controlled by 
-      Gadgetoria. We have no control over and assume no responsibility for the content, privacy policies, or practices 
+      Pushtihub. We have no control over and assume no responsibility for the content, privacy policies, or practices 
       of any third-party websites or services. You acknowledge and agree that we shall not be responsible or liable 
       for any damage or loss caused by your use of such websites or services.`,
   },
@@ -97,7 +97,7 @@ const sections = [
   {
     title: "Contact Information",
     content: `If you have any questions about these Terms and Conditions, please contact us at: 
-      legal@gadgetoria.com or write to us at Gadgetoria, 123 Tech Street, San Francisco, CA 94102, USA.`,
+      legal@Pushtihub.com or write to us at Pushtihub, 123 Tech Street, San Francisco, CA 94102, USA.`,
   },
 ];
 

@@ -5,7 +5,7 @@ const steps = [
     number: "1",
     title: "Contact Us",
     description:
-      "Email support@gadgetoria.com with your order number and reason for return within 30 days of delivery.",
+      "Email support@Pushtihub.com with your order number and reason for return within 30 days of delivery.",
   },
   {
     number: "2",

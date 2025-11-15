@@ -6,9 +6,8 @@ import CTA from "./_components/CTA";
 import ValuesGrid from "./_components/ValuesGrid";
 
 export const metadata: Metadata = {
-  title: "About | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "About | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const About = () => {
@@ -17,7 +16,7 @@ const About = () => {
       <Banner
         bgImage="/images/banners/about-page-banner.jpg"
         title="About"
-        description="Gadgetoria offers smart, affordable, innovative gadgets that simplify and enhance everyday life."
+        description="Pushtihub offers smart, affordable, innovative gadgets that simplify and enhance everyday life."
         breadcrumbs={[{ label: "About", href: "/about" }]}
       />
 

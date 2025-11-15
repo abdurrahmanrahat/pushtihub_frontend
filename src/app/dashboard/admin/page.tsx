@@ -5,9 +5,8 @@ import DashboardStats from "./_components/DashboardStats";
 import PendingOrdersTable from "./_components/PendingOrdersTable";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const AdminDashboardHomePage = () => {

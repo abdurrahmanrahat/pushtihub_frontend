@@ -5,9 +5,8 @@ import Link from "next/link";
 import LoginForm from "./_components/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Login | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Login | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 export default function LoginPage() {

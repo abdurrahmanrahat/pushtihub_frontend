@@ -20,9 +20,8 @@ import { CheckoutSteps } from "../../../components/common/Cart/CheckoutSteps";
 import { InvoiceDownloadButton } from "./_components/InvoiceDownloadButton";
 
 export const metadata: Metadata = {
-  title: "Order Success | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Order Success | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const OrderSuccessPage = async (props: {

@@ -18,9 +18,8 @@ import ReviewsStatusFilter from "./_components/ReviewsStatusFilter";
 import ReviewTableRow from "./_components/ReviewTableRow";
 
 export const metadata: Metadata = {
-  title: "Manage Reviews > Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Manage Reviews > Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 type TManageReviewsPageParams = {

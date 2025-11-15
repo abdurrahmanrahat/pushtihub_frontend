@@ -20,9 +20,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 export default function RootLayout({

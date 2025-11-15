@@ -30,7 +30,7 @@ const RefundPolicy = () => {
           <strong className="text-foreground">Exchanges:</strong> We only
           replace items if they are defective or damaged. If you need to
           exchange an item for the same product, contact us at
-          support@gadgetoria.com.
+          support@Pushtihub.com.
         </p>
       </div>
     </section>

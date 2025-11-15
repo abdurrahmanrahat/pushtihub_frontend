@@ -4,9 +4,8 @@ import Link from "next/link";
 import SignupForm from "./_components/SignupForm";
 
 export const metadata: Metadata = {
-  title: "Signup | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Signup | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 export default function SignUp() {

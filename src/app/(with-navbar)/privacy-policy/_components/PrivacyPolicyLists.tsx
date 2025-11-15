@@ -55,7 +55,7 @@ const sections = [
   },
   {
     title: "Contact Us",
-    content: `If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at privacy@gadgetoria.com.`,
+    content: `If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at privacy@Pushtihub.com.`,
   },
 ];
 

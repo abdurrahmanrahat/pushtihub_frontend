@@ -5,9 +5,8 @@ import { Metadata } from "next";
 import PrivacyPolicyLists from "./_components/PrivacyPolicyLists";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Privacy Policy | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const PrivacyPolicyPage = () => {
@@ -16,7 +15,7 @@ const PrivacyPolicyPage = () => {
       <Banner
         bgImage="/images/banners/privacy-policy-page-banner.jpg"
         title="Privacy Policy"
-        description="Gadgetoria values your privacy and is committed to protecting your information with transparency and security."
+        description="Pushtihub values your privacy and is committed to protecting your information with transparency and security."
         breadcrumbs={[{ label: "Privacy Policy", href: "/privacy-policy" }]}
       />
 
@@ -28,7 +27,7 @@ const PrivacyPolicyPage = () => {
                 <strong>Last Updated:</strong> January 15, 2025
               </p>
               <p className="text-muted-foreground text-justify">
-                At Gadgetoria, we take your privacy seriously. This Privacy
+                At Pushtihub, we take your privacy seriously. This Privacy
                 Policy explains how we collect, use, disclose, and safeguard
                 your information when you visit our website and use our
                 services. Please read this policy carefully to understand our

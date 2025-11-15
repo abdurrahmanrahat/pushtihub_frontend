@@ -3,9 +3,8 @@ import { ReactNode } from "react";
 import AdminLayout from "./layout/AdminLayout";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | Gadgetoria",
-  description:
-    "Discover genuine electronic parts and accessories for every device",
+  title: "Admin Dashboard | Pushtihub",
+  description: "Eat & Live Healthy",
 };
 
 const AdminDashboardLayout = ({ children }: { children: ReactNode }) => {

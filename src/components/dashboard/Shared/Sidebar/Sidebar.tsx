@@ -15,7 +15,7 @@ const Sidebar = ({ role, user }: { role: "user" | "admin"; user: TUser }) => {
           <Link href="/">
             {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
             <span className="font-bold text-xl 2xl:text-2xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-              Gadgetoria
+              Pushtihub
             </span>
           </Link>
         </div>
