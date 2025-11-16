@@ -1,86 +1,64 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { addProductToDB } from "@/app/actions/product";
-import MYMultiSelectWithExtra from "@/components/shared/Forms/MTMultiSelectWithExtra";
-import MYTextEditor from "@/components/shared/Forms/MTTextEditor";
-import MYForm from "@/components/shared/Forms/MYForm";
-import MYInput from "@/components/shared/Forms/MYInput";
-import MYSelect from "@/components/shared/Forms/MYSelect";
-import MyImage from "@/components/shared/Ui/Image/MyImage";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
-import { createSlug } from "@/utils/createSlug";
-import { ImageUp, Loader, Plus, Trash2 } from "lucide-react";
+import { ImageUp, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
-/* ------------------------------------------------------------------
-   ZOD SCHEMA (no price/sellingPrice/stock on root)
-------------------------------------------------------------------- */
+import MYForm from "@/components/shared/Forms/MYForm";
+import MYInput from "@/components/shared/Forms/MYInput";
+import MYMultiSelectWithExtra from "@/components/shared/Forms/MYMultiSelectWithExtra";
+import MYSelect from "@/components/shared/Forms/MYSelect";
+import MYTextEditor from "@/components/shared/Forms/MYTextEditor";
+import MyImage from "@/components/shared/Ui/Image/MyImage";
+import { Button } from "@/components/ui/button";
+
+import { addProductToDB } from "@/app/actions/product";
+import VariantManager from "./VariantManager";
+
+/* ----------------------------
+  ZOD SCHEMA
+----------------------------- */
+const variantItemSchema = z.object({
+  value: z.string().min(1, "Value is required"),
+  price: z.coerce.number().gt(0, "Price required. (<0))"),
+  sellingPrice: z.coerce.number().gt(0, "Selling price required. (<0))"),
+  stock: z.coerce.number().min(0, "Stock cannot be negative"),
+});
+
+const primaryVariantSchema = z.object({
+  type: z.enum(["size", "color", "weight"], {
+    required_error: "Please select a primary variant type.",
+    invalid_type_error: "Please select a primary variant type",
+  }),
+  items: z
+    .array(variantItemSchema)
+    .min(1, "Add at least one primary variant option."),
+});
+
+const secondaryVariantSchema = z.object({
+  size: z.array(z.string()).optional().default([]),
+  color: z.array(z.string()).optional().default([]),
+  weight: z.array(z.string()).optional().default([]),
+});
 
 const productSchema = z.object({
   name: z.string().min(1, "Please provide a product name."),
   category: z.string().min(1, "Please select a category."),
   description: z.string().min(1, "Provide product description."),
   tags: z.array(z.string()).min(1, "Select at least one tag."),
+  variants: z.object({
+    primary: primaryVariantSchema,
+    secondary: secondaryVariantSchema,
+  }),
 });
 
-type ProductFormValues = z.infer<typeof productSchema>;
+type TProductFormValues = z.infer<typeof productSchema>;
 
-/* ------------------------------------------------------------------
-   VARIANT TYPES / STATE
-------------------------------------------------------------------- */
-
-type VariantType = "size" | "color" | "weight";
-
-type VariantItem = {
-  value: string;
-  price: number | "";
-  sellingPrice: number | "";
-  stock: number | "";
-};
-
-type VariantGroup = {
-  type: VariantType;
-  items: VariantItem[];
-};
-
-type VariantItemPayload = {
-  value: string;
-  price: number;
-  sellingPrice: number;
-  stock: number;
-};
-
-type VariantGroupPayload = {
-  type: VariantType;
-  items: VariantItemPayload[];
-};
-
-const VARIANT_LABELS: Record<VariantType, string> = {
-  size: "Size",
-  color: "Color",
-  weight: "Weight",
-};
-
-const VARIANT_PLACEHOLDERS: Record<VariantType, string> = {
-  size: "e.g. S, M, L",
-  color: "e.g. Green, Red",
-  weight: "e.g. 250g, 500g",
-};
-
-const ALL_VARIANT_TYPES: VariantType[] = ["size", "color", "weight"];
-
-const img_hosting_token = process.env.NEXT_PUBLIC_imgBB_token;
-const img_hosting_url = `https://api.imgbb.com/1/upload?key=${img_hosting_token}`;
+const imgToken = process.env.NEXT_PUBLIC_imgBB_token;
+const uploadURL = `https://api.imgbb.com/1/upload?key=${imgToken}`;
 
 type TAddProductFormProps = {
   categories: { value: string; label: string }[];
@@ -91,314 +69,123 @@ const AddProductForm = ({
   categories,
   categorySlugs,
 }: TAddProductFormProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isImageUploading, setIsImageUploading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
-
-  // variants as ARRAY of groups
-  const [variantGroups, setVariantGroups] = useState<VariantGroup[]>([]);
-
-  // validation errors
-  const [variantGlobalError, setVariantGlobalError] = useState<string | null>(
-    null
-  );
-  const [variantGroupErrors, setVariantGroupErrors] = useState<
-    Partial<Record<VariantType, string | null>>
-  >({});
-  const [hasVariantValidationRun, setHasVariantValidationRun] = useState(false);
-
   const router = useRouter();
 
-  /* ------------------------------------------------------------------
-     Helpers: remaining variant types
-  ------------------------------------------------------------------- */
+  /* ----------------------------
+     STATE
+  ----------------------------- */
+  const [images, setImages] = useState<string[]>([]);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const remainingVariantTypes: VariantType[] = ALL_VARIANT_TYPES.filter(
-    (type) => !variantGroups.some((g) => g.type === type)
-  );
-
-  /* ------------------------------------------------------------------
-     Variant Validation (core logic)
-  ------------------------------------------------------------------- */
-
-  const runVariantValidation = (
-    groups: VariantGroup[],
-    withErrors: boolean
-  ): boolean => {
-    let globalError: string | null = null;
-    const groupErrors: Partial<Record<VariantType, string | null>> = {};
-
-    if (groups.length === 0) {
-      globalError =
-        "Please add at least one variant type with at least one option.";
-      if (withErrors) {
-        setVariantGlobalError(globalError);
-        setVariantGroupErrors(groupErrors);
-      }
-      return false;
-    }
-
-    let anyInvalid = false;
-
-    for (const group of groups) {
-      const { type, items } = group;
-
-      if (!items || items.length === 0) {
-        anyInvalid = true;
-        globalError =
-          globalError ??
-          "Please add at least one variant type with at least one option.";
-        groupErrors[
-          type
-        ] = `Please add at least one ${VARIANT_LABELS[type]} option.`;
-        continue;
-      }
-
-      const invalidRow = items.some((row) => {
-        if (!row.value || row.value.trim() === "") return true;
-
-        const price = Number(row.price);
-        const sellingPrice = Number(row.sellingPrice);
-        const stock = Number(row.stock);
-
-        if (!price || price <= 0 || isNaN(price)) return true;
-        if (!sellingPrice || sellingPrice <= 0 || isNaN(sellingPrice))
-          return true;
-        if (isNaN(stock) || stock < 0) return true;
-
-        return false;
-      });
-
-      if (invalidRow) {
-        anyInvalid = true;
-        globalError =
-          globalError ??
-          "Some variants are incomplete. Please fill all required fields.";
-        groupErrors[
-          type
-        ] = `Please complete all fields for ${VARIANT_LABELS[type]} variants.`;
-      } else {
-        // valid group, ensure no leftover error
-        groupErrors[type] = null;
-      }
-    }
-
-    if (!anyInvalid && !globalError) {
-      if (withErrors) {
-        setVariantGlobalError(null);
-        setVariantGroupErrors(groupErrors);
-      }
-      return true;
-    }
-
-    if (withErrors) {
-      if (!globalError) {
-        globalError = "Please fix the highlighted variant fields.";
-      }
-      setVariantGlobalError(globalError);
-      setVariantGroupErrors(groupErrors);
-    }
-
-    return false;
+  const defaultValues: TProductFormValues = {
+    name: "",
+    category: "",
+    description: "",
+    tags: [],
+    variants: {
+      primary: {
+        type: "" as any, // start empty, Zod will require it
+        items: [
+          {
+            value: "",
+            price: 0,
+            sellingPrice: 0,
+            stock: 0,
+          },
+        ],
+      },
+      secondary: {
+        size: [],
+        color: [],
+        weight: [],
+      },
+    },
   };
 
-  const validateVariants = (withErrors: boolean) =>
-    runVariantValidation(variantGroups, withErrors);
+  /* ----------------------------
+    IMAGE UPLOAD HANDLER
+  ----------------------------- */
+  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files?.length) return;
 
-  /* ------------------------------------------------------------------
-     Variant State Handlers (with auto re-validation)
-  ------------------------------------------------------------------- */
-
-  const handleAddVariantType = (type: VariantType) => {
-    if (!remainingVariantTypes.includes(type)) return;
-
-    setVariantGroups((prev) => {
-      const updated: VariantGroup[] = [
-        ...prev,
-        {
-          type,
-          items: [
-            {
-              value: "",
-              price: "",
-              sellingPrice: "",
-              stock: "",
-            },
-          ],
-        },
-      ];
-
-      if (hasVariantValidationRun) {
-        runVariantValidation(updated, true);
-      }
-
-      return updated;
-    });
-  };
-
-  const handleRemoveVariantType = (type: VariantType) => {
-    setVariantGroups((prev) => {
-      const updated = prev.filter((g) => g.type !== type);
-
-      if (hasVariantValidationRun) {
-        runVariantValidation(updated, true);
-      }
-
-      return updated;
-    });
-  };
-
-  const handleAddVariantRow = (type: VariantType) => {
-    setVariantGroups((prev) => {
-      const newRow: VariantItem = {
-        value: "",
-        price: "",
-        sellingPrice: "",
-        stock: "",
-      };
-
-      const updated = prev.map((group) =>
-        group.type === type
-          ? {
-              ...group,
-              items: [...group.items, newRow],
-            }
-          : group
-      );
-
-      if (hasVariantValidationRun) {
-        runVariantValidation(updated, true);
-      }
-
-      return updated;
-    });
-  };
-
-  const handleRemoveVariantRow = (type: VariantType, index: number) => {
-    setVariantGroups((prev) => {
-      const updated = prev
-        .map((group) =>
-          group.type === type
-            ? {
-                ...group,
-                items: group.items.filter((_, i) => i !== index),
-              }
-            : group
-        )
-        // if group has no items, remove that variant type entirely
-        .filter((group) => group.items.length > 0);
-
-      if (hasVariantValidationRun) {
-        runVariantValidation(updated, true);
-      }
-
-      return updated;
-    });
-  };
-
-  const handleVariantFieldChange = (
-    type: VariantType,
-    index: number,
-    field: keyof VariantItem,
-    value: string
-  ) => {
-    setVariantGroups((prev) => {
-      const updated = prev.map((group) => {
-        if (group.type !== type) return group;
-
-        const newItems = group.items.map((item, i) => {
-          if (i !== index) return item;
-
-          const updatedItem: VariantItem = { ...item };
-
-          if (
-            field === "price" ||
-            field === "sellingPrice" ||
-            field === "stock"
-          ) {
-            updatedItem[field] =
-              value === "" ? "" : (Number(value) as VariantItem[typeof field]);
-          } else {
-            updatedItem[field] = value as VariantItem[typeof field];
-          }
-
-          return updatedItem;
-        });
-
-        return { ...group, items: newItems };
-      });
-
-      if (hasVariantValidationRun) {
-        runVariantValidation(updated, true);
-      }
-
-      return updated;
-    });
-  };
-
-  const buildVariantsPayload = (): VariantGroupPayload[] => {
-    return variantGroups.map((group) => ({
-      type: group.type,
-      items: group.items.map((row) => ({
-        value: row.value.trim(),
-        price: Number(row.price),
-        sellingPrice: Number(row.sellingPrice),
-        stock: Number(row.stock),
-      })),
-    }));
-  };
-
-  /* ------------------------------------------------------------------
-     Handle Submit
-  ------------------------------------------------------------------- */
-
-  const handleAddProduct = async (values: ProductFormValues) => {
-    if (images.length === 0) {
-      // this is still okay as a toast
-      toast.error("Please upload at least one product image.");
+    if (images.length + files.length > 5) {
+      toast.error("Maximum 5 images allowed");
       return;
     }
 
-    setHasVariantValidationRun(true);
-    const variantsValid = validateVariants(true);
+    setIsImageUploading(true);
 
-    if (!variantsValid) {
-      // block submit, show only inline errors
+    try {
+      const uploads = Array.from(files).map(async (file) => {
+        if (file.size > 1024 * 1024) {
+          toast.error(`${file.name} exceeds 1MB`);
+          return null;
+        }
+
+        const fd = new FormData();
+        fd.append("image", file);
+
+        const res = await fetch(uploadURL, { method: "POST", body: fd });
+        const json = await res.json();
+
+        return json.success ? json.data.display_url : null;
+      });
+
+      const results = (await Promise.all(uploads)).filter(Boolean) as string[];
+
+      setImages((prev) => [...prev, ...results]);
+      if (results.length) toast.success("Image(s) uploaded");
+    } catch {
+      toast.error("Image upload failed");
+    } finally {
+      setIsImageUploading(false);
+    }
+  };
+
+  /* ----------------------------
+     SUBMIT HANDLER
+  ----------------------------- */
+  const handleSubmit = async (values: TProductFormValues) => {
+    const { variants, ...restValues } = values;
+    if (!images.length) {
+      toast.error("Upload at least 1 image");
       return;
     }
-
-    const variantsPayload = buildVariantsPayload();
 
     setIsLoading(true);
+
     try {
-      const slug = createSlug(values?.name);
+      // Clean secondary variants
+      const cleanedSecondary = Object.fromEntries(
+        Object.entries(variants.secondary || {}).filter(
+          ([_, arr]) => Array.isArray(arr) && arr.length > 0
+        )
+      );
 
-      const newProduct = {
-        name: values.name,
-        slug,
-        description: values.description,
-        images,
-        category: values.category,
-        tags: values.tags,
-        variants: variantsPayload,
+      const finalizeVariants = {
+        primary: variants.primary,
+        ...(Object.keys(cleanedSecondary).length > 0 && {
+          secondary: cleanedSecondary,
+        }),
       };
-      console.log("newPro", newProduct);
 
-      const res = await addProductToDB(newProduct);
+      const payload = {
+        ...restValues,
+        slug: values.name.trim().toLowerCase().replace(/\s+/g, "-"),
+        images,
+        variants: finalizeVariants,
+      };
+      console.log("payload", payload);
+
+      const res = await addProductToDB(payload);
 
       if (res?.success) {
-        toast.success("Product added successfully!");
-
-        // reset local UI state
-        setImages([]);
-        setVariantGroups([]);
-        setVariantGlobalError(null);
-        setVariantGroupErrors({});
-        setHasVariantValidationRun(false);
-
+        toast.success("Product added successfully");
         router.push("/dashboard/admin/manage-products");
       } else {
-        toast.error(res?.message || "Something went wrong!");
+        toast.error(res?.message || "Failed to add product");
       }
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong!");
@@ -407,87 +194,30 @@ const AddProductForm = ({
     }
   };
 
-  /* ------------------------------------------------------------------
-     Handle Image Upload
-  ------------------------------------------------------------------- */
-
-  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-
-    if (!files || files.length === 0) return;
-
-    if (images.length + files.length > 5) {
-      toast.error("You can upload a maximum of 5 images.");
-      return;
-    }
-
-    setIsImageUploading(true);
-
-    try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        if (file.size > 1 * 1024 * 1024) {
-          toast.error(`${file.name} exceeds 1MB limit.`);
-          return null;
-        }
-
-        const formData = new FormData();
-        formData.append("image", file);
-
-        const res = await fetch(img_hosting_url, {
-          method: "POST",
-          body: formData,
-        });
-        const imageRes = await res.json();
-
-        if (imageRes.success) return imageRes.data.display_url;
-        return null;
-      });
-
-      const uploaded = (await Promise.all(uploadPromises)).filter(
-        Boolean
-      ) as string[];
-
-      setImages((prev) => [...prev, ...uploaded]);
-      toast.success(`${uploaded.length} image(s) uploaded successfully!`);
-    } catch (error: any) {
-      toast.error(error?.message || "Image upload failed.");
-    } finally {
-      setIsImageUploading(false);
-    }
-  };
-
-  const defaultValues: ProductFormValues = {
-    name: "",
-    category: "",
-    description: "",
-    tags: [],
-  };
-
-  const hasAnyVariantSummary =
-    variantGroups.filter((g) => g.items && g.items.length > 0).length > 0;
-
+  /* ----------------------------
+    RENDER FORM
+  ----------------------------- */
   return (
     <MYForm
-      onSubmit={handleAddProduct}
       schema={productSchema}
       defaultValues={defaultValues}
+      onSubmit={handleSubmit}
     >
       <div className="space-y-6">
-        {/* Basic Info */}
+        {/* -------------------------
+          BASIC INFO
+        -------------------------- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Product Name */}
-          <div className="grid gap-[6px]">
-            <label className="text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-300">
-              Product Name <span className="text-red-500 font-medium">*</span>
+          <div>
+            <label className="font-medium text-sm 2xl:text-base">
+              Product Name <span className="text-red-600">*</span>
             </label>
             <MYInput name="name" placeholder="Enter product name" />
           </div>
 
-          {/* Category */}
-          <div className="grid gap-[6px]">
-            <label className="text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-300">
-              Product Category{" "}
-              <span className="text-red-500 font-medium">*</span>
+          <div>
+            <label className="font-medium text-sm 2xl:text-base">
+              Category <span className="text-red-600">*</span>
             </label>
             <MYSelect
               name="category"
@@ -497,369 +227,126 @@ const AddProductForm = ({
           </div>
         </div>
 
-        {/* Images */}
-        <div className="grid gap-[6px]">
-          <label className="text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-300">
-            Product Images <span className="text-red-500 font-medium">*</span>
+        {/* -------------------------
+          IMAGE UPLOAD
+        -------------------------- */}
+        <div>
+          <label className="font-medium text-sm 2xl:text-base">
+            Product Images <span className="text-red-600">*</span>
           </label>
 
-          <div>
-            <input
-              type="file"
-              id="product-images"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-
-            {images.length === 0 ? (
-              <label
-                htmlFor="product-images"
-                className="flex flex-col items-center justify-center py-6 px-3 rounded-md border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-primary transition-all cursor-pointer bg-light-gray dark:bg-deep-dark"
-              >
-                <ImageUp
-                  className={`h-8 w-8 mb-2 ${
-                    isImageUploading
-                      ? "text-primary animate-pulse"
-                      : "text-gray-400"
-                  }`}
-                />
-                <p className="text-sm 2xl:text-base">
-                  {isImageUploading ? "Uploading..." : "Click to upload images"}
-                </p>
-                <p className="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  PNG, JPG up to 1MB each — max 5 images
-                </p>
-              </label>
-            ) : (
-              <div className="flex flex-wrap gap-3 bg-light-gray dark:bg-deep-dark py-6 px-3 rounded-md border border-gray-200 dark:border-gray-700">
-                {images.map((img, index) => (
-                  <div
-                    key={index}
-                    className="relative w-24 h-24 rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 group"
-                  >
-                    <MyImage
-                      src={img}
-                      alt={`product-${index}`}
-                      fill
-                      className="object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setImages(images.filter((_, i) => i !== index))
-                      }
-                      className="absolute top-1 right-1 text-[10px] opacity-0 group-hover:opacity-100 transition-all duration-300 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-
-                {images.length < 5 && (
-                  <label
-                    htmlFor="product-images"
-                    className="w-24 h-24 flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600 rounded-md cursor-pointer hover:border-primary transition-all"
-                  >
-                    <ImageUp className="h-6 w-6 text-gray-400" />
-                  </label>
-                )}
-              </div>
-            )}
-          </div>
-
-          {images.length > 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
-              {images.length}/5 images uploaded
-            </p>
-          )}
-        </div>
-
-        {/* Description */}
-        <div className="grid gap-[6px]">
-          <label className="text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-300">
-            Product Description{" "}
-            <span className="text-red-500 font-medium">*</span>
-          </label>
-
-          <MYTextEditor name="description" />
-        </div>
-
-        {/* Tags */}
-        <div className="grid gap-[6px]">
-          <label className="text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-300">
-            Product Tags <span className="text-red-500 font-medium">*</span>
-          </label>
-
-          <MYMultiSelectWithExtra
-            name="tags"
-            options={categorySlugs}
-            placeholder="Select product tags"
+          <input
+            type="file"
+            id="image-uploader"
+            className="hidden"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
           />
-        </div>
 
-        {/* VARIANTS SECTION */}
-        <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 space-y-4 bg-light-gray/40 dark:bg-deep-dark/40">
-          {/* Header + Add Variant */}
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm xl:text-lg 2xl:text-xl font-medium text-gray-800 dark:text-gray-100">
-              Variants
-            </h3>
-
-            {remainingVariantTypes.length > 0 ? (
-              <Select
-                onValueChange={(val) =>
-                  handleAddVariantType(val as VariantType)
-                }
-              >
-                <SelectTrigger className="h-7 border-none bg-transparent p-0 text-primary text-xs md:text-sm 2xl:text-base font-semibold uppercase tracking-wide hover:underline w-auto focus:ring-0 focus:ring-offset-0">
-                  <span className="flex items-center gap-1 cursor-pointer">
-                    <Plus className="h-3 w-3" />
-                    <span>Add Variant</span>
-                  </span>
-                </SelectTrigger>
-                <SelectContent className="text-sm">
-                  {remainingVariantTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {VARIANT_LABELS[type]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <span className="text-xs md:text-sm 2xl:text-base uppercase tracking-wide text-gray-400">
-                No variant available to add
-              </span>
-            )}
-          </div>
-
-          {variantGroups.length === 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              No variants added yet. Use{" "}
-              <span className="font-medium">Add Variant</span> to create{" "}
-              <i>Size</i>, <i>Color</i>, or <i>Weight</i> options.
-            </p>
-          )}
-
-          {/* Variant Blocks */}
-          <div className="space-y-4">
-            {variantGroups.map((group) => {
-              const { type, items } = group;
-              const label = VARIANT_LABELS[type];
-              const groupError = variantGroupErrors[type];
-
-              if (!items || items.length === 0) return null;
-
-              return (
+          {images.length === 0 ? (
+            <label
+              htmlFor="image-uploader"
+              className="cursor-pointer flex flex-col items-center justify-center border border-muted py-8 md:py-10 rounded-md bg-light-gray dark:bg-deep-dark"
+            >
+              <ImageUp
+                className={`h-6 w-6 2xl:h-8 2xl:w-8 mb-2 ${
+                  isImageUploading
+                    ? "text-primary animate-pulse"
+                    : "text-gray-400"
+                }`}
+              />
+              <p className="text-sm 2xl:text-base">
+                {isImageUploading ? "Uploading..." : "Click to upload image"}
+              </p>
+            </label>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {images.map((img, i) => (
                 <div
-                  key={type}
-                  className="rounded-md border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-black/30 p-3 space-y-3"
+                  key={i}
+                  className="relative w-24 h-24 rounded-md overflow-hidden border border-muted"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs xl:text-sm 2xl:text-base font-semibold text-gray-800 dark:text-gray-100">
-                      {label} Variants
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveVariantType(type)}
-                      className="text-xs xl:text-sm 2xl:text-base text-red-500 hover:text-red-600 font-medium cursor-pointer"
-                    >
-                      Remove {label}
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {items.map((row, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-2 md:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))_40px] gap-3 items-end"
-                      >
-                        {/* Value */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] 2xl:text-sm font-medium text-gray-600 dark:text-gray-300">
-                            {label} Value
-                          </label>
-                          <Input
-                            type="text"
-                            value={row.value}
-                            onChange={(e) =>
-                              handleVariantFieldChange(
-                                type,
-                                index,
-                                "value",
-                                e.target.value
-                              )
-                            }
-                            placeholder={VARIANT_PLACEHOLDERS[type]}
-                            className="py-[18px] px-4 rounded-md border border-muted text-gray-800 dark:text-gray-200 
-                        placeholder-gray-400 dark:placeholder-gray-500
-                            focus:outline-none hover:border-primary focus:border-primary
-                            transition-all duration-200 ease-in-out bg-light-gray dark:bg-deep-dark"
-                          />
-                        </div>
-
-                        {/* Price */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] 2xl:text-sm font-medium text-gray-600 dark:text-gray-300">
-                            Price
-                          </label>
-                          <Input
-                            type="number"
-                            min={0}
-                            value={row.price}
-                            onChange={(e) =>
-                              handleVariantFieldChange(
-                                type,
-                                index,
-                                "price",
-                                e.target.value
-                              )
-                            }
-                            placeholder="0"
-                            className="py-[18px] px-4 rounded-md border border-muted text-gray-800 dark:text-gray-200 
-                        placeholder-gray-400 dark:placeholder-gray-500
-                            focus:outline-none hover:border-primary focus:border-primary
-                            transition-all duration-200 ease-in-out bg-light-gray dark:bg-deep-dark"
-                          />
-                        </div>
-
-                        {/* Selling Price */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] 2xl:text-sm font-medium text-gray-600 dark:text-gray-300">
-                            Selling Price
-                          </label>
-                          <Input
-                            type="number"
-                            min={0}
-                            value={row.sellingPrice}
-                            onChange={(e) =>
-                              handleVariantFieldChange(
-                                type,
-                                index,
-                                "sellingPrice",
-                                e.target.value
-                              )
-                            }
-                            placeholder="0"
-                            className="py-[18px] px-4 rounded-md border border-muted text-gray-800 dark:text-gray-200 
-                        placeholder-gray-400 dark:placeholder-gray-500
-                            focus:outline-none hover:border-primary focus:border-primary
-                            transition-all duration-200 ease-in-out bg-light-gray dark:bg-deep-dark"
-                          />
-                        </div>
-
-                        {/* Stock */}
-                        <div className="space-y-1">
-                          <label className="text-[11px] 2xl:text-sm font-medium text-gray-600 dark:text-gray-300">
-                            Stock
-                          </label>
-                          <Input
-                            type="number"
-                            min={0}
-                            value={row.stock}
-                            onChange={(e) =>
-                              handleVariantFieldChange(
-                                type,
-                                index,
-                                "stock",
-                                e.target.value
-                              )
-                            }
-                            placeholder="0"
-                            className="py-[18px] px-4 rounded-md border border-muted text-gray-800 dark:text-gray-200 
-                        placeholder-gray-400 dark:placeholder-gray-500
-                            focus:outline-none hover:border-primary focus:border-primary
-                            transition-all duration-200 ease-in-out bg-light-gray dark:bg-deep-dark"
-                          />
-                        </div>
-
-                        {/* Remove Row */}
-                        <div className="flex items-end justify-end pb-[bpx]">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveVariantRow(type, index)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-500/10"
-                          >
-                            <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Per-variant error */}
-                  {groupError && (
-                    <p className="text-[11px] text-red-600 mt-1">
-                      {groupError}
-                    </p>
-                  )}
-
-                  {/* Add row for this variant type */}
+                  <MyImage
+                    src={img}
+                    alt="product"
+                    fill
+                    className="object-cover"
+                  />
                   <button
                     type="button"
-                    onClick={() => handleAddVariantRow(type)}
-                    className="mt-1 inline-flex items-center gap-1 text-[11px] 2xl:text-sm font-medium text-primary hover:underline"
+                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full p-1"
+                    onClick={() =>
+                      setImages(images.filter((_, idx) => idx !== i))
+                    }
                   >
-                    <Plus className="h-3 w-3" />
-                    <span>Add another {label.toLowerCase()} option</span>
+                    ✕
                   </button>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Global variants error */}
-          {variantGlobalError && (
-            <p className="text-xs text-red-600 mt-1">{variantGlobalError}</p>
-          )}
-
-          {/* Selected Variants Summary */}
-          {hasAnyVariantSummary && (
-            <div className="pt-3 border-t border-dashed border-gray-200 dark:border-gray-700">
-              <p className="text-xs 2xl:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
-                Selected Variants:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {variantGroups.map((group) => {
-                  const count = group.items.length;
-                  if (count === 0) return null;
-
-                  return (
-                    <span
-                      key={group.type}
-                      className="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-600 px-2 py-1 text-[11px] 2xl:text-sm text-gray-700 dark:text-gray-200"
-                    >
-                      <span className="text-green-500">✔</span>
-                      <span className="capitalize">{group.type}</span>:
-                      <span>
-                        {count} item{count > 1 ? "s" : ""}
-                      </span>
-                    </span>
-                  );
-                })}
-              </div>
+              ))}
+              {images.length < 5 && (
+                <label
+                  htmlFor="image-uploader"
+                  className="w-24 h-24 border border-dashed border-muted flex items-center justify-center cursor-pointer rounded-md"
+                >
+                  <ImageUp className="h-5 w-5 text-gray-400" />
+                </label>
+              )}
             </div>
           )}
         </div>
 
-        {/* Submit Button */}
-        <div className="mt-2 w-full">
-          <Button
-            className="h-11 2xl:h-12 cursor-pointer w-full"
-            type="submit"
-            disabled={isLoading || isImageUploading}
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader className="h-4 w-4 animate-spin [animation-duration:1.4s]" />{" "}
-                <span>Uploading...</span>
-              </span>
-            ) : (
-              "Upload Product"
-            )}
-          </Button>
+        {/* -------------------------
+          DESCRIPTION
+        -------------------------- */}
+        <div>
+          <label className="font-medium text-sm 2xl:text-base">
+            Description <span className="text-red-600">*</span>
+          </label>
+          <MYTextEditor name="description" />
         </div>
+
+        {/* -------------------------
+          TAGS
+        -------------------------- */}
+        <div>
+          <label className="font-medium text-sm 2xl:text-base">
+            Tags <span className="text-red-600">*</span>
+          </label>
+          <MYMultiSelectWithExtra
+            name="tags"
+            options={categorySlugs}
+            placeholder="Select tags"
+          />
+        </div>
+
+        {/* -------------------------
+          VARIANTS (new modular system)
+        -------------------------- */}
+        <div>
+          <label className="font-medium text-sm 2xl:text-base">
+            Variants <span className="text-red-600">*</span>
+          </label>
+          <VariantManager />
+        </div>
+
+        {/* -------------------------
+          SUBMIT
+        -------------------------- */}
+        <Button
+          type="submit"
+          disabled={isLoading || isImageUploading}
+          className="w-full h-11"
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <Loader className="h-4 w-4 animate-spin" />
+              Uploading...
+            </span>
+          ) : (
+            "Upload Product"
+          )}
+        </Button>
       </div>
     </MYForm>
   );

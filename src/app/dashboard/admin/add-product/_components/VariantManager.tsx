@@ -1,0 +1,357 @@
+"use client";
+
+import MYMultiSelectWithExtra from "@/components/shared/Forms/MYMultiSelectWithExtra";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { colors } from "@/utils/colors";
+import { sizes } from "@/utils/sizes";
+import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import {
+  FieldErrors,
+  Path,
+  useFieldArray,
+  useFormContext,
+} from "react-hook-form";
+
+type TVariantType = "size" | "color" | "weight";
+
+const VARIANT_LABELS: Record<TVariantType, string> = {
+  size: "Size",
+  color: "Color",
+  weight: "Weight",
+};
+
+/* -----------------------------------------------------
+     SAFE ERROR ACCESSOR
+  ------------------------------------------------------ */
+const getVariantError = (
+  err: FieldErrors<any>,
+  key: "primary" | "secondary"
+) => {
+  if (!err?.variants) return undefined;
+
+  if (typeof err.variants !== "object") return undefined;
+  return (err.variants as any)[key];
+};
+
+function getPrimaryItemError(
+  errors: any,
+  index: number,
+  field: "value" | "price" | "sellingPrice" | "stock"
+) {
+  if (
+    errors?.variants &&
+    typeof errors.variants === "object" &&
+    "primary" in errors.variants &&
+    errors.variants.primary?.items &&
+    Array.isArray(errors.variants.primary.items)
+  ) {
+    return errors.variants.primary.items[index]?.[field];
+  }
+  return undefined;
+}
+
+const VariantManager = () => {
+  const {
+    control,
+    register,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<any>();
+
+  // PRIMARY VARIANT
+  const primaryType: TVariantType | "" = watch("variants.primary.type");
+
+  const {
+    fields: primaryItems,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "variants.primary.items",
+  });
+
+  /* -----------------------------------------------------
+     SECONDARY VARIANTS — local UI state
+     Only controls visibility, RHF handles the values
+  ------------------------------------------------------ */
+  const [secondary, setSecondary] = useState<{
+    size?: boolean;
+    color?: boolean;
+    weight?: boolean;
+  }>({});
+
+  const toggleSecondary = (type: TVariantType, enabled: boolean) => {
+    setSecondary((prev) => ({
+      ...prev,
+      [type]: enabled ? true : false,
+    }));
+
+    const path = `variants.secondary.${type}` as Path<any>;
+
+    if (!enabled) {
+      setValue(path, []); // Clear values
+    } else {
+      const existing = watch(path) || [];
+      setValue(path, existing); // Ensure registered array
+    }
+  };
+
+  const primaryError = getVariantError(errors, "primary");
+  const secondaryError = getVariantError(errors, "secondary");
+
+  return (
+    <div className="border border-gray-200 dark:border-gray-700 rounded-md p-4 space-y-4 bg-light-gray/40 dark:bg-deep-dark/40">
+      {/* ---------------------------------------------------
+          PRIMARY VARIANT SELECTION
+      ---------------------------------------------------- */}
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm xl:text-lg font-medium text-gray-800 dark:text-gray-100">
+          Primary Variant
+        </h3>
+
+        <Select
+          value={primaryType || undefined}
+          onValueChange={(val) => {
+            // Reset old fields when switching primary
+            setValue("variants.primary.items", []);
+            setSecondary({});
+            setValue("variants.secondary", {});
+            setValue("variants.primary.type", val as TVariantType);
+
+            append({ value: "", price: 0, sellingPrice: 0, stock: 0 });
+          }}
+        >
+          <SelectTrigger className="h-9 w-40 text-xs md:text-sm">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value="weight">Weight</SelectItem>
+            <SelectItem value="size">Size</SelectItem>
+            <SelectItem value="color">Color</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {primaryError?.type && (
+        <p className="text-xs text-red-600 mt-1">
+          {primaryError.type.message as string}
+        </p>
+      )}
+
+      {/* ---------------------------------------------------
+          PRIMARY VARIANT ITEMS
+      ---------------------------------------------------- */}
+      {primaryType && (
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-gray-700 dark:text-gray-200">
+            {VARIANT_LABELS[primaryType]} Options
+          </p>
+
+          {primaryItems.map((field, index) => {
+            const valueError = getPrimaryItemError(errors, index, "value");
+            const priceError = getPrimaryItemError(errors, index, "price");
+            const sellingError = getPrimaryItemError(
+              errors,
+              index,
+              "sellingPrice"
+            );
+            const stockError = getPrimaryItemError(errors, index, "stock");
+
+            return (
+              <div
+                key={field.id}
+                className="grid grid-cols-2 md:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))_40px] gap-3 items-end"
+              >
+                {/* VALUE */}
+                <div className="space-y-1 relative">
+                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                    {VARIANT_LABELS[primaryType]} Value
+                  </label>
+
+                  <Input
+                    {...register(
+                      `variants.primary.items.${index}.value` as const
+                    )}
+                    placeholder={
+                      primaryType === "weight"
+                        ? "e.g. 250g"
+                        : primaryType === "size"
+                        ? "e.g. M"
+                        : "e.g. Red"
+                    }
+                  />
+
+                  {valueError && (
+                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                      {valueError.message || "Invalid value"}
+                    </p>
+                  )}
+                </div>
+
+                {/* PRICE */}
+                <div className="space-y-1 relative">
+                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                    Price
+                  </label>
+
+                  <Input
+                    type="number"
+                    {...register(
+                      `variants.primary.items.${index}.price` as const
+                    )}
+                  />
+
+                  {priceError && (
+                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                      {priceError.message || "Invalid price"}
+                    </p>
+                  )}
+                </div>
+
+                {/* SELLING PRICE */}
+                <div className="space-y-1 relative">
+                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                    Selling Price
+                  </label>
+
+                  <Input
+                    type="number"
+                    {...register(
+                      `variants.primary.items.${index}.sellingPrice` as const
+                    )}
+                  />
+
+                  {sellingError && (
+                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                      {sellingError.message || "Invalid selling price"}
+                    </p>
+                  )}
+                </div>
+
+                {/* STOCK */}
+                <div className="space-y-1 relative">
+                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                    Stock
+                  </label>
+
+                  <Input
+                    type="number"
+                    {...register(
+                      `variants.primary.items.${index}.stock` as const
+                    )}
+                  />
+
+                  {stockError && (
+                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                      {stockError.message || "Invalid stock"}
+                    </p>
+                  )}
+                </div>
+
+                {/* REMOVE BUTTON */}
+                <div className="flex items-end justify-end">
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="h-8 w-8 flex items-center justify-center rounded border hover:bg-red-50"
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              append({ value: "", price: 0, sellingPrice: 0, stock: 0 })
+            }
+            className="text-[11px] flex gap-1 text-primary hover:underline px-0"
+          >
+            <Plus className="h-3 w-3" />
+            Add another {VARIANT_LABELS[primaryType]}
+          </Button>
+        </div>
+      )}
+
+      {/* ---------------------------------------------------
+          SECONDARY VARIANTS (only after primary selected)
+      ---------------------------------------------------- */}
+      {primaryType && (
+        <div className="pt-4 border-t border-dashed space-y-3">
+          <p className="text-sm font-medium">Secondary Variants (optional)</p>
+
+          {/* CHECKBOXES */}
+          <div className="flex flex-wrap gap-4 text-xs">
+            {(["size", "color", "weight"] as TVariantType[])
+              .filter((t) => t !== primaryType)
+              .map((type) => (
+                <label
+                  key={type}
+                  className="inline-flex items-center gap-2 cursor-pointer"
+                >
+                  <Checkbox
+                    checked={!!secondary[type]}
+                    onCheckedChange={(val) =>
+                      toggleSecondary(type, Boolean(val))
+                    }
+                  />
+                  <span className="capitalize">{VARIANT_LABELS[type]}</span>
+                </label>
+              ))}
+          </div>
+
+          {/* EDITOR FIELDS */}
+          <div className="space-y-3">
+            {secondary.size && (
+              <MYMultiSelectWithExtra
+                name="variants.secondary.size"
+                options={sizes}
+                placeholder="Add size"
+              />
+            )}
+
+            {secondary.color && (
+              <MYMultiSelectWithExtra
+                name="variants.secondary.color"
+                options={colors}
+                placeholder="Add color"
+              />
+            )}
+
+            {secondary.weight && (
+              <MYMultiSelectWithExtra
+                name="variants.secondary.weight"
+                options={["250g", "500g"]}
+                placeholder="Add lightweight label"
+              />
+            )}
+          </div>
+
+          {secondaryError && (
+            <p className="text-xs text-red-600 mt-1">
+              {secondaryError.message}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default VariantManager;

@@ -40,7 +40,7 @@ const MYSelect = ({ name, options, placeholder }: TMYSelectProps) => {
               className={cn(
                 // Base style
                 "h-11 w-full cursor-pointer rounded-md text-sm transition-all duration-200 ease-in-out",
-                "text-foreground placeholder:text-muted-foreground text-gray-800 dark:text-gray-200",
+                "text-foreground placeholder:text-muted-foreground placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-gray-200",
                 "border focus:outline-none focus:ring-0",
                 "hover:border-primary focus:border-primary",
                 "dark:bg-deep-dark dark:text-gray-100 dark:placeholder:text-gray-500",

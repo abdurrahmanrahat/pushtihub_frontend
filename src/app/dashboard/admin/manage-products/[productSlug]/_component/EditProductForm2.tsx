@@ -1,11 +1,11 @@
 "use client";
 
 import { updateProductInDB } from "@/app/actions/product";
-import MYMultiSelectWithExtra from "@/components/shared/Forms/MTMultiSelectWithExtra";
-import MYTextEditor from "@/components/shared/Forms/MTTextEditor";
 import MYForm from "@/components/shared/Forms/MYForm";
 import MYInput from "@/components/shared/Forms/MYInput";
+import MYMultiSelectWithExtra from "@/components/shared/Forms/MYMultiSelectWithExtra";
 import MYSelect from "@/components/shared/Forms/MYSelect";
+import MYTextEditor from "@/components/shared/Forms/MYTextEditor";
 import MyImage from "@/components/shared/Ui/Image/MyImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -8,14 +8,12 @@ import ProductGallery from "@/components/common/Product/ProductGallery";
 import { Rating } from "@/components/common/Product/Rating";
 import Container from "@/components/shared/Ui/Container";
 import NoDataFound from "@/components/shared/Ui/Data/NoDataFound";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TProduct } from "@/types";
 import { stripHtml, truncateText } from "@/utils/conversion";
-import { slugToTitle } from "@/utils/createSlug";
-import { RotateCcw, Shield, Tag, Truck } from "lucide-react";
-import ProductActions from "./_components/ProductActions";
+import { RotateCcw, Shield, Truck } from "lucide-react";
+import ProductShortSummary from "./_components/ProductShortSummary";
 import RelatedProducts from "./_components/RelatedProducts";
 import { ReviewsSection } from "./_components/ReviewsSection";
 
@@ -111,13 +109,6 @@ const ProductDetailPage = async (props: {
   }
   const product: TProduct = singleProductResponse?.data;
 
-  const discount =
-    product.price > product.sellingPrice
-      ? Math.round(
-          ((product.price - product.sellingPrice) / product.price) * 100
-        )
-      : 0;
-
   return (
     <div className="min-h-screen bg-background">
       <Container className="py-8">
@@ -131,19 +122,8 @@ const ProductDetailPage = async (props: {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           {/* Image Gallery */}
-          <div className="relative">
+          <div className="">
             <ProductGallery images={product.images} />
-
-            {discount > 0 && (
-              <div className="absolute top-4 left-4">
-                <Badge
-                  variant="destructive"
-                  className="font-semibold uppercase"
-                >
-                  -{discount}% OFF
-                </Badge>
-              </div>
-            )}
           </div>
 
           {/* Product Info */}
@@ -159,53 +139,7 @@ const ProductDetailPage = async (props: {
               />
             </div>
 
-            <div className="flex items-baseline gap-3">
-              <span className="text-lg md:text-2xl font-semibold text-primary">
-                ${product.sellingPrice}
-              </span>
-              {product.price > product.sellingPrice && (
-                <span className="text-base md:text-lg font-medium text-gray-600 dark:text-gray-400 line-through">
-                  ${product.price}
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {product.stock > 0 ? (
-                <Badge
-                  variant="outline"
-                  className="text-green-600 border-green-600"
-                >
-                  In Stock ({product.stock} available)
-                </Badge>
-              ) : (
-                <Badge variant="destructive">Out of Stock</Badge>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <div className="">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Category:{" "}
-                  <span className="font-semibold text-foreground">
-                    {slugToTitle(product.category)}
-                  </span>
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Tag className="h-4 w-4 text-primary" />
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* actions */}
-            <ProductActions product={product} />
+            <ProductShortSummary product={product} />
 
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="text-center space-y-2">
