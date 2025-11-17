@@ -172,13 +172,18 @@ const ManageProductsPage = async (props: {
                             <TableCell className="font-medium">
                               <div className="flex gap-1 items-center">
                                 <span className="text-primary">
-                                  ৳{product.variants[0].items[0].sellingPrice}
+                                  ৳
+                                  {
+                                    product.variants.primary.items[0]
+                                      .sellingPrice
+                                  }
                                 </span>
                                 <span>
-                                  ({product.variants[0].items[0].value})
+                                  ({product.variants.primary.items[0].value})
                                 </span>
                               </div>
                             </TableCell>
+
                             {/* <TableCell>
                               <div className="text-sm 2xl:text-base">
                                 <p className="text-muted-foreground">

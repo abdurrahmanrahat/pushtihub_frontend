@@ -1,36 +1,45 @@
-export type TProductVariantItem = {
+export type TPrimaryVariantItem = {
   value: string;
   price: number;
   sellingPrice: number;
   stock: number;
 };
 
-export type TProductVariantGroup = {
+export type TPrimaryVariant = {
   type: "size" | "color" | "weight";
-  items: TProductVariantItem[];
+  items: TPrimaryVariantItem[];
 };
 
-export type TProduct = {
+export type TSecondaryVariants = {
+  size?: string[];
+  color?: string[];
+  weight?: string[];
+};
+
+export type TVariants = {
+  primary: TPrimaryVariant;
+  secondary?: TSecondaryVariants;
+};
+
+export interface TProduct {
   _id: string;
+
   name: string;
   slug: string;
-  description: string; // html string
+  description: string;
   images: string[];
+
   category: string;
-
-  // NEW VARIANT SYSTEM
-  variants: TProductVariantGroup[];
-
   tags: string[];
+
+  variants: TVariants;
 
   totalReviews: number;
   averageRatings: number;
   salesCount: number;
-
   isDeleted: boolean;
 
-  createdAt: string; // ISO string from server
+  createdAt: string;
   updatedAt: string;
-
   __v: number;
-};
+}
