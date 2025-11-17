@@ -275,7 +275,7 @@ const AddProductForm = ({
                   />
                   <button
                     type="button"
-                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full p-1"
+                    className="w-4 h-4 absolute top-1 right-1 bg-red-500 text-white text-[11px] rounded-full flex items-center justify-center cursor-pointer"
                     onClick={() =>
                       setImages(images.filter((_, idx) => idx !== i))
                     }

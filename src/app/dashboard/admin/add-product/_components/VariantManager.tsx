@@ -116,7 +116,7 @@ const VariantManager = () => {
           PRIMARY VARIANT SELECTION
       ---------------------------------------------------- */}
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm xl:text-lg font-medium text-gray-800 dark:text-gray-100">
+        <h3 className="text-sm xl:text-base 2xl:text-lg font-medium text-gray-800 dark:text-gray-100">
           Primary Variant
         </h3>
 
@@ -132,8 +132,8 @@ const VariantManager = () => {
             append({ value: "", price: 0, sellingPrice: 0, stock: 0 });
           }}
         >
-          <SelectTrigger className="h-9 w-40 text-xs md:text-sm">
-            <SelectValue placeholder="Select type" />
+          <SelectTrigger className="h-8 md:h-9 w-40 text-sm 2xl:text-base">
+            <SelectValue placeholder="Select variant" />
           </SelectTrigger>
 
           <SelectContent>
@@ -155,7 +155,7 @@ const VariantManager = () => {
       ---------------------------------------------------- */}
       {primaryType && (
         <div className="space-y-3">
-          <p className="text-xs font-medium text-gray-700 dark:text-gray-200">
+          <p className="text-xs xl:text-sm 2xl:text-base font-medium text-gray-700 dark:text-gray-200">
             {VARIANT_LABELS[primaryType]} Options
           </p>
 
@@ -172,92 +172,94 @@ const VariantManager = () => {
             return (
               <div
                 key={field.id}
-                className="grid grid-cols-2 md:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))_40px] gap-3 items-end"
+                className="w-full flex flex-col md:flex-row gap-3 items-end justify-center"
               >
-                {/* VALUE */}
-                <div className="space-y-1 relative">
-                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                    {VARIANT_LABELS[primaryType]} Value
-                  </label>
+                <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2 xl:gap-3 justify-between">
+                  {/* VALUE */}
+                  <div className="space-y-1 relative">
+                    <label className="text-xs xl:text-xs 2xl:text-[15px] font-medium text-gray-600 dark:text-gray-300">
+                      {VARIANT_LABELS[primaryType]} Value
+                    </label>
 
-                  <Input
-                    {...register(
-                      `variants.primary.items.${index}.value` as const
+                    <Input
+                      {...register(
+                        `variants.primary.items.${index}.value` as const
+                      )}
+                      placeholder={
+                        primaryType === "weight"
+                          ? "e.g. 250g"
+                          : primaryType === "size"
+                          ? "e.g. M"
+                          : "e.g. Red"
+                      }
+                    />
+
+                    {valueError && (
+                      <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                        {valueError.message || "Invalid value"}
+                      </p>
                     )}
-                    placeholder={
-                      primaryType === "weight"
-                        ? "e.g. 250g"
-                        : primaryType === "size"
-                        ? "e.g. M"
-                        : "e.g. Red"
-                    }
-                  />
+                  </div>
 
-                  {valueError && (
-                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
-                      {valueError.message || "Invalid value"}
-                    </p>
-                  )}
-                </div>
+                  {/* PRICE */}
+                  <div className="space-y-1 relative">
+                    <label className="text-xs xl:text-xs 2xl:text-[15px] font-medium text-gray-600 dark:text-gray-300">
+                      Price
+                    </label>
 
-                {/* PRICE */}
-                <div className="space-y-1 relative">
-                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                    Price
-                  </label>
+                    <Input
+                      type="number"
+                      {...register(
+                        `variants.primary.items.${index}.price` as const
+                      )}
+                    />
 
-                  <Input
-                    type="number"
-                    {...register(
-                      `variants.primary.items.${index}.price` as const
+                    {priceError && (
+                      <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                        {priceError.message || "Invalid price"}
+                      </p>
                     )}
-                  />
+                  </div>
 
-                  {priceError && (
-                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
-                      {priceError.message || "Invalid price"}
-                    </p>
-                  )}
-                </div>
+                  {/* SELLING PRICE */}
+                  <div className="space-y-1 relative">
+                    <label className="text-xs xl:text-xs 2xl:text-[15px] font-medium text-gray-600 dark:text-gray-300">
+                      Selling Price
+                    </label>
 
-                {/* SELLING PRICE */}
-                <div className="space-y-1 relative">
-                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                    Selling Price
-                  </label>
+                    <Input
+                      type="number"
+                      {...register(
+                        `variants.primary.items.${index}.sellingPrice` as const
+                      )}
+                    />
 
-                  <Input
-                    type="number"
-                    {...register(
-                      `variants.primary.items.${index}.sellingPrice` as const
+                    {sellingError && (
+                      <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                        {sellingError.message || "Invalid selling price"}
+                      </p>
                     )}
-                  />
+                  </div>
 
-                  {sellingError && (
-                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
-                      {sellingError.message || "Invalid selling price"}
-                    </p>
-                  )}
-                </div>
+                  {/* STOCK */}
+                  <div className="space-y-1 relative">
+                    <label className="text-xs xl:text-xs 2xl:text-[15px] font-medium text-gray-600 dark:text-gray-300">
+                      Stock
+                    </label>
 
-                {/* STOCK */}
-                <div className="space-y-1 relative">
-                  <label className="text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                    Stock
-                  </label>
+                    <Input
+                      type="number"
+                      {...register(
+                        `variants.primary.items.${index}.stock` as const
+                      )}
+                    />
 
-                  <Input
-                    type="number"
-                    {...register(
-                      `variants.primary.items.${index}.stock` as const
+                    {stockError && (
+                      <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
+                        {stockError.message || "Invalid stock"}
+                      </p>
                     )}
-                  />
-
-                  {stockError && (
-                    <p className="absolute -bottom-[14px] text-red-600 text-xs mt-1">
-                      {stockError.message || "Invalid stock"}
-                    </p>
-                  )}
+                  </div>
                 </div>
 
                 {/* REMOVE BUTTON */}
@@ -265,9 +267,9 @@ const VariantManager = () => {
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="h-8 w-8 flex items-center justify-center rounded border hover:bg-red-50"
+                    className="h-8 w-8 2xl:h-10 2xl:w-10 flex items-center justify-center rounded border border-muted cursor-pointer hover:bg-red-50"
                   >
-                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                    <Trash2 className="h-3.5 w-3.5 2xl:h-5 2xl:w-5 text-red-500" />
                   </button>
                 </div>
               </div>
@@ -281,7 +283,7 @@ const VariantManager = () => {
             onClick={() =>
               append({ value: "", price: 0, sellingPrice: 0, stock: 0 })
             }
-            className="text-[11px] flex gap-1 text-primary hover:underline px-0"
+            className="text-xs 2xl:text-sm flex gap-1 text-primary hover:underline px-0"
           >
             <Plus className="h-3 w-3" />
             Add another {VARIANT_LABELS[primaryType]}
@@ -293,11 +295,13 @@ const VariantManager = () => {
           SECONDARY VARIANTS (only after primary selected)
       ---------------------------------------------------- */}
       {primaryType && (
-        <div className="pt-4 border-t border-dashed space-y-3">
-          <p className="text-sm font-medium">Secondary Variants (optional)</p>
+        <div className="pt-4 border-t border-dashed border-muted space-y-3">
+          <p className="text-xs xl:text-sm 2xl:text-base">
+            Secondary Variants (optional)
+          </p>
 
           {/* CHECKBOXES */}
-          <div className="flex flex-wrap gap-4 text-xs">
+          <div className="flex flex-wrap gap-4 text-xs 2xl:text-base">
             {(["size", "color", "weight"] as TVariantType[])
               .filter((t) => t !== primaryType)
               .map((type) => (
@@ -322,7 +326,7 @@ const VariantManager = () => {
               <MYMultiSelectWithExtra
                 name="variants.secondary.size"
                 options={sizes}
-                placeholder="Add size"
+                placeholder="Add size (multiple allow)"
               />
             )}
 
@@ -330,7 +334,7 @@ const VariantManager = () => {
               <MYMultiSelectWithExtra
                 name="variants.secondary.color"
                 options={colors}
-                placeholder="Add color"
+                placeholder="Add color (multiple allow)"
               />
             )}
 
@@ -338,7 +342,7 @@ const VariantManager = () => {
               <MYMultiSelectWithExtra
                 name="variants.secondary.weight"
                 options={["250g", "500g"]}
-                placeholder="Add lightweight label"
+                placeholder="Add weight (multiple allow)"
               />
             )}
           </div>
