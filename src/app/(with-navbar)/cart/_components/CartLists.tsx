@@ -20,18 +20,23 @@ import CartCard from "./CartCard";
 import NotFoundCartItems from "./NotFoundCartItems";
 
 const CartLists = () => {
-  const shipOption = useAppSelector((state) => state.cart.shippingOption);
-  const [shippingOption, setShippingOption] = useState(shipOption || "dhaka");
-
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const storedOption = useAppSelector((state) => state.cart.shippingOption);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.sellingPrice * item.quantity,
-    0
+  const [shippingOption, setShippingOption] = useState<"dhaka" | "outside">(
+    storedOption || "dhaka"
   );
+
+  if (cartItems.length === 0) return <NotFoundCartItems />;
+
+  // SUBTOTAL => sum of item.selectedVariants[0].item.sellingPrice × quantity
+  const subtotal = cartItems.reduce((total, item) => {
+    const primary = item.selectedVariants[0]?.item;
+    return total + primary.sellingPrice * item.quantity;
+  }, 0);
 
   const shippingCost =
     shippingOption === "dhaka"
@@ -40,7 +45,6 @@ const CartLists = () => {
 
   const total = subtotal + Number(shippingCost);
 
-  // handle checkout
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty");
@@ -48,39 +52,37 @@ const CartLists = () => {
     }
 
     dispatch(updateShippingOption(shippingOption));
-
     router.push("/checkout");
   };
-
-  // cart.length === 0
-  if (cartItems.length === 0) {
-    return <NotFoundCartItems />;
-  }
 
   return (
     <div className="grid lg:grid-cols-3 gap-6 mt-6">
       {/* Cart Items */}
       <div className="lg:col-span-2 space-y-4">
         {cartItems.map((item) => (
-          <CartCard key={item.product._id} item={item} />
+          <CartCard
+            key={`${item.product._id}-${JSON.stringify(item.selectedVariants)}`}
+            item={item}
+          />
         ))}
       </div>
 
       {/* Order Summary */}
       <div className="lg:col-span-1">
-        <Card className="sticky top-6 py-0">
+        <Card className="sticky top-6">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between text-sm md:text-base 2xl:text-lg">
               <span className="text-muted-foreground">Subtotal:</span>
-              <span className="font-medium">${subtotal.toFixed(2)}</span>
+              <span className="font-medium">৳{subtotal.toFixed(2)}</span>
             </div>
 
+            {/* Shipping Options */}
             <div>
               <h3 className="font-medium mb-3 2xl:text-lg">Shipping</h3>
               <RadioGroup
                 value={shippingOption}
-                onValueChange={(value) =>
-                  setShippingOption(value as "dhaka" | "outside")
+                onValueChange={(v) =>
+                  setShippingOption(v as "dhaka" | "outside")
                 }
                 className="space-y-0"
               >
@@ -100,7 +102,7 @@ const CartLists = () => {
                     </div>
 
                     <span className="text-sm 2xl:text-base font-medium">
-                      ${option.price}
+                      ৳{option.price}
                     </span>
                   </div>
                 ))}
@@ -113,9 +115,10 @@ const CartLists = () => {
 
             <Separator />
 
+            {/* TOTAL */}
             <div className="flex justify-between text-base 2xl:text-lg font-bold">
               <span>Total</span>
-              <span className="text-primary">${total.toFixed(2)}</span>
+              <span className="text-primary">৳{total.toFixed(2)}</span>
             </div>
 
             <Button className="w-full" size="lg" onClick={handleCheckout}>

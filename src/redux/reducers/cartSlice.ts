@@ -11,13 +11,24 @@ const initialState: TCartState = {
   shippingOption: "dhaka",
 };
 
+/* ------------------------------------------------------
+   Helper: Compare selectedVariants arrays safely
+------------------------------------------------------- */
+const isSameVariantCombo = (
+  a: TSelectedVariant[],
+  b: TSelectedVariant[]
+): boolean => {
+  if (a.length !== b.length) return false;
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     /* =======================================================
-       ADD TO CART — Product + Variant(s)
-       If same variant combination exists → do NOT duplicate
+       ADD TO CART
+       - Do NOT duplicate if same variant combo exists
     ======================================================== */
     addToCart: (state, action: PayloadAction<TCartItem>) => {
       const newItem = action.payload;
@@ -25,8 +36,7 @@ const cartSlice = createSlice({
       const exists = state.items.some(
         (item) =>
           item.product._id === newItem.product._id &&
-          JSON.stringify(item.selectedVariants) ===
-            JSON.stringify(newItem.selectedVariants)
+          isSameVariantCombo(item.selectedVariants, newItem.selectedVariants)
       );
 
       if (!exists) {
@@ -35,7 +45,7 @@ const cartSlice = createSlice({
     },
 
     /* =======================================================
-       REMOVE FROM CART — By productId + selectedVariants
+       REMOVE FROM CART by productId + selectedVariants
     ======================================================== */
     removeFromCart: (
       state,
@@ -48,14 +58,16 @@ const cartSlice = createSlice({
         (item) =>
           !(
             item.product._id === action.payload.productId &&
-            JSON.stringify(item.selectedVariants) ===
-              JSON.stringify(action.payload.selectedVariants)
+            isSameVariantCombo(
+              item.selectedVariants,
+              action.payload.selectedVariants
+            )
           )
       );
     },
 
     /* =======================================================
-       UPDATE QUANTITY — For specific product + variant combo
+       UPDATE QUANTITY for specific variant combination
     ======================================================== */
     updateQuantity: (
       state,
@@ -65,20 +77,22 @@ const cartSlice = createSlice({
         quantity: number;
       }>
     ) => {
-      const item = state.items.find(
+      const found = state.items.find(
         (item) =>
           item.product._id === action.payload.productId &&
-          JSON.stringify(item.selectedVariants) ===
-            JSON.stringify(action.payload.selectedVariants)
+          isSameVariantCombo(
+            item.selectedVariants,
+            action.payload.selectedVariants
+          )
       );
 
-      if (item) {
-        item.quantity = action.payload.quantity;
+      if (found) {
+        found.quantity = action.payload.quantity;
       }
     },
 
     /* =======================================================
-       SHIPPING OPTION CHANGE
+       SHIPPING OPTION
     ======================================================== */
     updateShippingOption: (
       state,
@@ -88,7 +102,7 @@ const cartSlice = createSlice({
     },
 
     /* =======================================================
-       CLEAR CART
+       CLEAR CART COMPLETELY
     ======================================================== */
     clearCart: (state) => {
       state.items = [];
@@ -100,8 +114,8 @@ export const {
   addToCart,
   removeFromCart,
   updateQuantity,
-  clearCart,
   updateShippingOption,
+  clearCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

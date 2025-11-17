@@ -1,3 +1,5 @@
+"use client";
+
 import { QuantityStepper } from "@/components/common/Product/QuantityStepper";
 import MyImage from "@/components/shared/Ui/Image/MyImage";
 import { Button } from "@/components/ui/button";
@@ -10,24 +12,34 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 const CartSheetCard = ({ item }: { item: TCartItem }) => {
-  const handleUpdateQuantity = (newQuantity: number) => {
-    if (newQuantity < 1) {
-      toast.error("You have to put at least 1 quantity!");
-    } else if (newQuantity > item.product.stock) {
-      toast.error("Out of stock!");
-    } else {
-      dispatch(
-        updateQuantity({ productId: item.product._id, quantity: newQuantity })
-      );
-    }
-  };
-
   const dispatch = useAppDispatch();
 
-  const handleRemoveItem = (productId: string) => {
-    dispatch(removeFromCart(productId));
+  const primary = item.selectedVariants[0].item;
+
+  const handleUpdateQuantity = (qty: number) => {
+    if (qty < 1) return toast.error("Minimum quantity is 1!");
+    if (qty > primary.stock) return toast.error("Insufficient stock!");
+
+    dispatch(
+      updateQuantity({
+        productId: item.product._id,
+        selectedVariants: item.selectedVariants,
+        quantity: qty,
+      })
+    );
+  };
+
+  const handleRemove = () => {
+    dispatch(
+      removeFromCart({
+        productId: item.product._id,
+        selectedVariants: item.selectedVariants,
+      })
+    );
     toast.success("Item removed from cart");
   };
+
+  const totalPrice = primary.sellingPrice * item.quantity;
 
   return (
     <Card className="p-2">
@@ -41,35 +53,45 @@ const CartSheetCard = ({ item }: { item: TCartItem }) => {
             className="w-24 h-24 object-cover rounded-lg"
           />
         </Link>
+
+        {/* Content */}
         <div className="flex-1 space-y-2">
           <Link href={`/product/${item.product.slug}`}>
-            <h3 className="text-sm font-medium hover:text-primary transition-colors">
-              {item.product.name.length > 35
-                ? `${item.product.name.slice(0, 35)}...`
-                : item.product.name}
+            <h3 className="text-sm font-medium hover:text-primary transition-colors line-clamp-2">
+              {item.product.name}
             </h3>
           </Link>
-          <p className="font-semibold text-sm">${item.product.sellingPrice}</p>
+
+          {/* Variant */}
+          <p className="text-xs text-muted-foreground">
+            Variant: <span className="font-medium">{primary.value}</span>
+          </p>
+
+          {/* Price */}
+          <p className="font-semibold text-sm">৳{primary.sellingPrice}</p>
+
+          {/* Quantity */}
           <div className="flex items-center gap-3">
             <QuantityStepper
               value={item.quantity}
               onChange={handleUpdateQuantity}
-              max={item.product.stock}
+              max={primary.stock}
             />
+
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleRemoveItem(item.product._id)}
+              onClick={handleRemove}
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
+        {/* Total */}
         <div className="text-right">
-          <p className="font-semibold">
-            ${(item.product.sellingPrice * item.quantity).toFixed(2)}
-          </p>
+          <p className="font-semibold">৳{totalPrice.toFixed(2)}</p>
         </div>
       </div>
     </Card>

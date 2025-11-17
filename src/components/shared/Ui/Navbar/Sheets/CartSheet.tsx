@@ -21,29 +21,35 @@ import {
   insideDhakaShippingCost,
   outsideDhakaShippingCost,
 } from "@/constants/shippingKey";
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { updateShippingOption } from "@/redux/reducers/cartSlice";
 import { shippingOptions } from "@/utils/shippingOptions";
 import { useRouter } from "next/navigation";
+
 import CartSheetCard from "./CartSheetCard";
 import { CheckoutStepsForSheet } from "./CheckoutStepsForSheet";
 
 export default function CartSheet() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const shipOption = useAppSelector((state) => state.cart.shippingOption);
-
-  const [shippingOption, setShippingOption] = useState(shipOption || "dhaka");
-
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const storedOption = useAppSelector((state) => state.cart.shippingOption);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
+  const [shippingOption, setShippingOption] = useState<"dhaka" | "outside">(
+    storedOption || "dhaka"
   );
+
+  /* ------------------------------------
+        SUBTOTAL (variant-based)
+  ------------------------------------ */
+  const subtotal = cartItems.reduce((sum, item) => {
+    const primary = item.selectedVariants[0].item;
+    return sum + primary.sellingPrice * item.quantity;
+  }, 0);
 
   const shippingCost =
     shippingOption === "dhaka"
@@ -52,23 +58,17 @@ export default function CartSheet() {
 
   const total = subtotal + shippingCost;
 
-  // const freeShippingThreshold = 2000;
-  // const remainingForFreeShipping = Math.max(
-  //   0,
-  //   freeShippingThreshold - subtotal
-  // );
-
-  // handle checkout
+  /* ------------------------------------
+        Checkout
+  ------------------------------------ */
   const handleCheckout = () => {
     setIsOpen(false);
-
     dispatch(updateShippingOption(shippingOption));
-
     router.push("/checkout");
   };
 
   const handleContinueShopping = () => {
-    setIsOpen((prev) => !prev);
+    setIsOpen(false);
     router.push("/shop");
   };
 
@@ -86,9 +86,10 @@ export default function CartSheet() {
           </Badge>
         </span>
       </SheetTrigger>
+
       <SheetContent
         showCloseButton={true}
-        className="w-full sm:max-w-[400px] border-none overflow-y-auto"
+        className="w-full sm:max-w-[400px] 2xl:max-w-[460px] border-none overflow-y-auto"
       >
         <SheetHeader className="-mb-4">
           <SheetTitle className="flex items-center gap-2">
@@ -98,7 +99,7 @@ export default function CartSheet() {
         </SheetHeader>
 
         <div className="flex flex-col h-full w-full">
-          {/* Header */}
+          {/* Header Progress */}
           <div className="border-b border-primary/10">
             <div className="w-full max-w-4xl mx-auto py-6">
               <CheckoutStepsForSheet currentStep={1} />
@@ -107,125 +108,116 @@ export default function CartSheet() {
 
           {/* Main Content */}
           <div className="w-full pt-6 px-4">
-            <div>
-              <div>
-                <div className="">
-                  {cartItems.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center gap-1 py-12">
-                      <div className="flex flex-col items-center justify-center gap-1">
-                        <ShoppingBag className="w-12 h-12" />
-                        <h4 className="text-lg lg:text-xl font-medium">
-                          Your cart is empty!
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-                          Add some products to get started
-                        </p>
-                      </div>
-                      <Button onClick={handleContinueShopping}>
-                        Continue Shopping
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="py-6">
-                      {cartItems.map((item, index) => (
-                        <div key={item.product._id}>
-                          <div className="">
-                            <CartSheetCard item={item} />
+            {/* Cart Items */}
+            {cartItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-1 py-12">
+                <ShoppingBag className="w-12 h-12" />
+                <h4 className="text-lg lg:text-xl font-medium">
+                  Your cart is empty!
+                </h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                  Add some products to get started
+                </p>
+                <Button onClick={handleContinueShopping}>
+                  Continue Shopping
+                </Button>
+              </div>
+            ) : (
+              <div className="py-6">
+                {cartItems.map((item, index) => (
+                  <div
+                    key={`${item.product._id}-${JSON.stringify(
+                      item.selectedVariants
+                    )}`}
+                  >
+                    <CartSheetCard item={item} />
+                    {index < cartItems.length - 1 && (
+                      <hr className="my-4 border border-primary/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Order Summary */}
+            <div className="mt-8">
+              <Card>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex justify-between text-sm md:text-base">
+                    <span className="text-muted-foreground">Subtotal:</span>
+                    <span className="font-medium">৳{subtotal.toFixed(2)}</span>
+                  </div>
+
+                  {/* Shipping Options */}
+                  <div>
+                    <h3 className="font-medium mb-3">Shipping</h3>
+
+                    <RadioGroup
+                      value={shippingOption}
+                      onValueChange={(v) =>
+                        setShippingOption(v as "dhaka" | "outside")
+                      }
+                      className="space-y-0"
+                    >
+                      {shippingOptions.map((option) => (
+                        <div
+                          key={option.id}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value={option.id} id={option.id} />
+                            <Label
+                              htmlFor={option.id}
+                              className="text-sm cursor-pointer"
+                            >
+                              {option.name}
+                            </Label>
                           </div>
-                          {index < cartItems.length - 1 && (
-                            <hr className="my-4 border border-primary/10" />
-                          )}
+
+                          <span className="text-sm font-medium">
+                            ৳{option.price}
+                          </span>
                         </div>
                       ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+                    </RadioGroup>
 
-              <div className="mt-8">
-                <Card className="">
-                  <CardContent className="p-6 space-y-4">
-                    <div className="flex justify-between text-sm md:text-base">
-                      <span className="text-muted-foreground">Subtotal:</span>
-                      <span className="font-medium">
-                        ${subtotal.toFixed(2)}
-                      </span>
-                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Shipping options will be updated during checkout.
+                    </p>
+                  </div>
 
-                    <div>
-                      <h3 className="font-medium mb-3">Shipping</h3>
-                      <RadioGroup
-                        value={shippingOption}
-                        onValueChange={(value) =>
-                          setShippingOption(value as "dhaka" | "outside")
-                        }
-                        className="space-y-0"
-                      >
-                        {shippingOptions.map((option) => (
-                          <div
-                            key={option.id}
-                            className="flex items-center justify-between"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem
-                                value={option.id}
-                                id={option.id}
-                              />
-                              <Label
-                                htmlFor={option.id}
-                                className="text-sm cursor-pointer"
-                              >
-                                {option.name}
-                              </Label>
-                            </div>
+                  <Separator />
 
-                            <span className="text-sm font-medium">
-                              ${option.price}
-                            </span>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                  {/* TOTAL */}
+                  <div className="flex justify-between text-base font-bold">
+                    <span>Total</span>
+                    <span className="text-primary">৳{total.toFixed(2)}</span>
+                  </div>
 
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Shipping options will be updated during checkout.
-                      </p>
-                    </div>
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    disabled={cartItems.length === 0}
+                    onClick={handleCheckout}
+                  >
+                    Proceed to checkout
+                  </Button>
 
-                    <Separator />
-
-                    <div className="flex justify-between text-base font-bold">
-                      <span>Total</span>
-                      <span className="text-primary">${total.toFixed(2)}</span>
-                    </div>
-
-                    <Button
-                      className="w-full"
-                      size="lg"
-                      disabled={cartItems.length === 0}
-                      onClick={handleCheckout}
-                    >
-                      Proceed to checkout
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="w-full border border-gray-200 dark:border-gray-700 hover:bg-primary hover:text-white transition-all duration-300"
-                      size="lg"
-                      onClick={() => {
-                        setIsOpen(false);
-
-                        dispatch(updateShippingOption(shippingOption));
-
-                        // Navigate to cart page
-                        router.push("/cart");
-                      }}
-                      disabled={cartItems.length === 0}
-                    >
-                      View Cart
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    size="lg"
+                    disabled={cartItems.length === 0}
+                    onClick={() => {
+                      setIsOpen(false);
+                      dispatch(updateShippingOption(shippingOption));
+                      router.push("/cart");
+                    }}
+                  >
+                    View Cart
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

@@ -8,25 +8,14 @@ import { TProduct } from "@/types/product.type";
 import Link from "next/link";
 
 /* ------------------------------
-   SAFE HELPERS
+   Helpers
 ------------------------------- */
-const getFirstItem = (product: TProduct) => {
-  const firstVariant = product.variants?.[0];
-  return firstVariant?.items?.[0] || null;
-};
-
-// total stock = sum of all items in all variants
-const getTotalStock = (product: TProduct) => {
-  return (
-    product.variants
-      ?.flatMap((v) => v.items)
-      ?.reduce((sum, item) => sum + item.stock, 0) || 0
-  );
+const getFirstPrimaryItem = (product: TProduct) => {
+  return product.variants?.primary?.items?.[0] ?? null;
 };
 
 export const ProductCard = ({ product }: { product: TProduct }) => {
-  const firstItem = getFirstItem(product);
-  const totalStock = getTotalStock(product);
+  const firstItem = getFirstPrimaryItem(product);
 
   const sellingPrice = firstItem?.sellingPrice ?? null;
   const originalPrice = firstItem?.price ?? null;
@@ -59,7 +48,7 @@ export const ProductCard = ({ product }: { product: TProduct }) => {
         </div>
 
         {/* Wishlist / Stock Badge */}
-        {totalStock > 0 ? (
+        {product.variants?.primary?.items?.[0].stock > 0 ? (
           <AddToWishlistButton product={product} />
         ) : (
           <Badge
@@ -71,7 +60,7 @@ export const ProductCard = ({ product }: { product: TProduct }) => {
         )}
 
         {/* Content */}
-        <CardContent className="py-3 px-3 h-[150px] md:h-[165px] flex flex-col justify-between">
+        <CardContent className="py-3 px-3 h-[150px] xl:h-[160px] 2xl:h-[165px] flex flex-col justify-between">
           {/* Product Name */}
           <h4 className="font-medium text-xs md:text-sm 2xl:text-base line-clamp-2 mb-2 leading-[18px] 2xl:leading-5">
             {product.name}
@@ -97,29 +86,22 @@ export const ProductCard = ({ product }: { product: TProduct }) => {
                     <span className="text-sm md:text-base 2xl:text-lg font-semibold text-primary">
                       ৳{sellingPrice}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({firstItem?.value})
-                    </span>
+                    {/* Original Price (del) */}
+                    {originalPrice && originalPrice > sellingPrice && (
+                      <span className="text-xs md:text-sm 2xl:text-base text-gray-600 dark:text-gray-400 line-through">
+                        ৳{originalPrice}
+                      </span>
+                    )}
                   </div>
 
-                  {/* Original Price (del) */}
-                  {originalPrice && originalPrice > sellingPrice && (
-                    <span className="text-xs md:text-sm 2xl:text-base text-gray-600 dark:text-gray-400 line-through">
-                      ৳{originalPrice}
-                    </span>
-                  )}
+                  <span className="text-xs text-muted-foreground">
+                    ({firstItem?.value})
+                  </span>
                 </>
               ) : (
                 <span className="text-sm text-red-500">No price</span>
               )}
             </div>
-
-            {/* Discount Badge */}
-            {/* {discountTk > 0 && (
-              <Badge variant="destructive" className="font-semibold mb-2">
-                Save ৳{discountTk}
-              </Badge>
-            )} */}
 
             {/* Add to Cart */}
             <AddToCartButton product={product} />

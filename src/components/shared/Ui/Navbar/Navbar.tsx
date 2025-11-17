@@ -43,7 +43,11 @@ export default async function Navbar() {
             </div>
 
             <Link href={`/`}>
-              <MyLogo width={160} height={100} />
+              <MyLogo
+                width={120}
+                height={100}
+                className="w-[120px] md:w-[160px]"
+              />
             </Link>
           </div>
 

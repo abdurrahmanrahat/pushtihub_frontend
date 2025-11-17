@@ -25,30 +25,56 @@ const WishlistCard = ({ product, onSheetClose }: TWishlistCardProps) => {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
 
+  const primary = product.variants.primary;
+  const firstItem = primary.items[0];
+  const firstStock = firstItem?.stock ?? 0;
+
   const removeWishlistItem = (productId: string) => {
     dispatch(removeFromWishlist(productId));
   };
 
-  const addProductToCart = (product: TProduct) => {
-    const alreadyCart = cartItems.some(
-      (item) => item.product._id === product._id
+  const handleAddToCart = () => {
+    // Check duplicate (same product + same primary variant)
+    const alreadyInCart = cartItems.some(
+      (item) =>
+        item.product._id === product._id &&
+        item.selectedVariants.length === 1 &&
+        item.selectedVariants[0].type === primary.type &&
+        item.selectedVariants[0].item.value === firstItem?.value
     );
 
-    if (alreadyCart) {
-      toast.error("Already you have added in cart!");
-    } else if (product.stock === 0) {
-      toast.error("Out of stock!");
-    } else {
-      dispatch(addToCart({ product, quantity: quantity }));
-      dispatch(removeFromWishlist(product._id));
-
-      toast.success("Add to cart success");
-
-      // if (wishlists.length === 1) { // there has a problem of as the dispatch did not clear this render.
-      //   router.push("/cart");
-      //   setIsOpen(false);
-      // }
+    if (alreadyInCart) {
+      toast.error("Already added to cart!");
+      return;
     }
+
+    if (firstStock <= 0) {
+      toast.error("Out of stock!");
+      return;
+    }
+
+    // Correct structure for TSelectedVariant[]
+    const selectedVariants = [
+      {
+        type: primary.type,
+        item: {
+          value: firstItem?.value ?? "",
+          price: firstItem?.price ?? 0,
+          sellingPrice: firstItem?.sellingPrice ?? 0,
+          stock: firstItem?.stock ?? 0,
+        },
+      },
+    ];
+
+    dispatch(
+      addToCart({
+        product,
+        quantity: 1,
+        selectedVariants,
+      })
+    );
+
+    toast.success("Added to cart!");
   };
 
   // handle card click to navigate product details page
@@ -91,26 +117,31 @@ const WishlistCard = ({ product, onSheetClose }: TWishlistCardProps) => {
           <QuantityStepper
             value={quantity}
             onChange={setQuantity}
-            max={product.stock}
+            max={firstItem.stock}
           />
         </div>
         <div className="flex justify-between items-center">
           {/* Price */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-primary">
-              ${product.sellingPrice.toFixed(2)}
+          <div className="flex items-center gap-1">
+            <span className="text-sm md:text-base 2xl:text-lg font-semibold text-primary">
+              ৳{firstItem.sellingPrice}
             </span>
-            {product.price > product.sellingPrice && (
-              <span className="text-xs text-gray-600 dark:text-gray-400 line-through">
-                ${product.price.toFixed(2)}
+
+            {firstItem.price > firstItem.sellingPrice && (
+              <span className="text-xs md:text-sm 2xl:text-base text-gray-600 line-through">
+                ৳{firstItem.price}
               </span>
             )}
+
+            <span className="text-xs text-muted-foreground">
+              ({firstItem.value})
+            </span>
           </div>
 
           <Button
             onClick={(e) => {
               e.stopPropagation();
-              addProductToCart(product);
+              handleAddToCart();
             }}
             className="cursor-pointer"
             aria-label="Add to cart"

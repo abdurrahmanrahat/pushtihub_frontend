@@ -30,16 +30,19 @@ const ProductActions = ({
   const cartItems = useAppSelector((state) => state.cart.items);
   const wishlistItems = useAppSelector((state) => state.wishlist.items);
 
+  /* -------- Cart Check -------- */
   const alreadyCart = cartItems.some(
     (item) =>
       item.product._id === product._id &&
       JSON.stringify(item.selectedVariants) === JSON.stringify(selectedVariants)
   );
 
+  /* -------- Wishlist Check -------- */
   const alreadyWishlist = wishlistItems.some(
     (item) => item._id === product._id
   );
 
+  /* -------- Add to Cart -------- */
   const handleAddToCart = () => {
     if (alreadyCart) return toast.error("Already added in cart!");
     if (selectedStock === 0)
@@ -53,11 +56,11 @@ const ProductActions = ({
       })
     );
 
-    toast.success("Added to cart");
+    toast.success("Added to cart!");
   };
 
   return (
-    <div>
+    <div className="">
       <div className="flex items-center gap-4">
         <QuantityStepper
           value={quantity}
@@ -65,20 +68,23 @@ const ProductActions = ({
           max={selectedStock}
         />
 
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={handleAddToCart}
-          disabled={selectedStock === 0}
-        >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          {selectedStock === 0 ? "Out of Stock" : "Add to Cart"}
-        </Button>
+        <div className="w-full">
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={handleAddToCart}
+            disabled={selectedStock === 0}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            {selectedStock === 0 ? "Out of Stock" : "Add to Cart"}
+          </Button>
+        </div>
 
         {alreadyWishlist ? (
           <Button
             size="lg"
             variant="outline"
+            // className="w-full"
             onClick={() => {
               dispatch(removeFromWishlist(product._id));
               toast.success("Removed from wishlist");
@@ -90,6 +96,7 @@ const ProductActions = ({
           <Button
             size="lg"
             variant="outline"
+            // className="w-full"
             onClick={() => {
               dispatch(addToWishlist(product));
               toast.success("Added to wishlist");
