@@ -60,13 +60,20 @@ const BillingDetails = () => {
   const dispatch = useAppDispatch();
 
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) =>
+      sum + item.selectedVariants[0].item.sellingPrice * item.quantity,
     0
   );
 
   const orderItems = cartItems.map((item) => ({
     product: item.product._id,
     quantity: item.quantity,
+
+    selectedVariants: item.selectedVariants, // << IMPORTANT
+    unitSellingPrice: item.selectedVariants[0].item.sellingPrice ?? null,
+    unitPrice: item.selectedVariants[0].item.price ?? null,
+    lineTotal:
+      (item.selectedVariants[0].item.sellingPrice ?? 0) * item.quantity,
   }));
 
   const shippingCost =
@@ -242,31 +249,48 @@ const BillingDetails = () => {
                   </div>
                 ) : (
                   <>
-                    {cartItems.map((item) => (
-                      <div key={item.product._id} className="flex gap-3">
-                        <MyImage
-                          src={item.product.images[0]}
-                          alt={item.product.name}
-                          width={64}
-                          height={64}
-                          className="w-16 h-16 rounded object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm 2xl:text-base line-clamp-2">
-                            {item.product.name}
-                          </p>
-                          <p className="text-xs 2xl:text-sm text-muted-foreground">
-                            × {item.quantity}
-                          </p>
+                    {cartItems.map((item) => {
+                      const primaryVariant = item.selectedVariants[0]?.item; // FIRST SELECTED PRIMARY
+                      const variantLabel = `${primaryVariant.value}`; // ex: “220g”
+
+                      const variantKey = item.selectedVariants
+                        .map((v) => `${v.type}:${v.item.value}`)
+                        .join("-");
+
+                      return (
+                        <div
+                          key={`${item.product._id}-${variantKey}`}
+                          className="flex gap-3"
+                        >
+                          <MyImage
+                            src={item.product.images[0]}
+                            alt={item.product.name}
+                            width={64}
+                            height={64}
+                            className="w-16 h-16 rounded object-cover"
+                          />
+
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm 2xl:text-base line-clamp-2">
+                              {item.product.name}
+                            </p>
+
+                            {/* Variant label: e.g., “220g” */}
+                            <p className="text-xs text-muted-foreground">
+                              {variantLabel} × {item.quantity}
+                            </p>
+                          </div>
+
+                          {/* Price: primaryVariant.sellingPrice × quantity */}
+                          <span className="text-sm 2xl:text-base font-medium">
+                            ৳{" "}
+                            {(
+                              primaryVariant.sellingPrice * item.quantity
+                            ).toFixed(2)}
+                          </span>
                         </div>
-                        <span className="text-sm 2xl:text-base font-medium">
-                          ${" "}
-                          {(item.product.sellingPrice * item.quantity).toFixed(
-                            2
-                          )}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </>
                 )}
               </div>
