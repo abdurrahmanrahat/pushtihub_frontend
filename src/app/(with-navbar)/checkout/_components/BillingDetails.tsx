@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearCart } from "@/redux/reducers/cartSlice";
 import { shippingOptions } from "@/utils/shippingOptions";
 import { Loader, Lock, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -25,29 +26,39 @@ import { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
-const userBillingAddressSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  fullAddress: z.string().min(1, "Full address is required"),
-  phone: z
-    .string()
-    .min(11, "Number must be at least 11 digits")
-    .max(14, "Number can't exceed 14 digits"),
-  country: z.string().default("Bangladesh"), // or `.optional()` if not required
-  orderNotes: z.string().optional(), // allow empty or undefined notes
-});
-
 const userBillingAddress = {
   fullName: "",
   fullAddress: "",
   phone: "",
   country: "Bangladesh",
   orderNotes: "",
+
+  paymentPhoneNumber: "",
+  paymentTrxID: "",
 };
+
+const paymentMethods = [
+  {
+    id: "bkash",
+    name: "Bkash (Manual)",
+    logo: "/icons/bkash-logo.svg",
+    accountType: "Personal",
+    accountNumber: "01704345701", // you will update
+  },
+  {
+    id: "nagad",
+    name: "Nagad (Manual)",
+    logo: "/icons/nagad-logo.svg",
+    accountType: "Personal",
+    accountNumber: "01968668506", // you will update
+  },
+];
 
 const BillingDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Payment Method state
+  const [paymentMethod, setPaymentMethod] = useState("bkash");
 
   const shipOption = useAppSelector((state) => state.cart.shippingOption);
 
@@ -86,21 +97,32 @@ const BillingDetails = () => {
     setIsLoading(true);
 
     const orderData = {
-      ...values,
+      customerInfo: {
+        fullName: values.fullName,
+        phone: values.phone,
+        fullAddress: values.fullAddress,
+        country: values.country,
+        orderNotes: values?.orderNotes || "",
+      },
       shippingOption,
+      shippingCost,
       orderItems,
       subtotal,
       total,
-      paymentMethod: "CASH-ON-DELIVERY", // will be dynamic
+      paymentDetails: {
+        method: paymentMethod,
+        phone: values.paymentPhoneNumber,
+        transactionId: values.paymentTrxID,
+      },
+      // paymentMethod: "CASH-ON-DELIVERY", // will be dynamic
     };
+    console.log("orderData", orderData);
 
     // send to db
     try {
       const res = await createOrderInDB(orderData);
-
       if (res?.success) {
         toast.success("Order place successfully!");
-
         router.push(`/order-success?orderId=${res.data._id}`);
         dispatch(clearCart());
       } else {
@@ -112,6 +134,46 @@ const BillingDetails = () => {
       setIsLoading(false);
     }
   };
+
+  const userBillingAddressSchema = z
+    .object({
+      fullName: z.string().min(1, "Full name is required"),
+      fullAddress: z.string().min(1, "Full address is required"),
+      phone: z
+        .string()
+        .min(11, "Number must be at least 11 digits")
+        .max(14, "Number can't exceed 14 digits"),
+      country: z.string().default("Bangladesh"),
+      orderNotes: z.string().optional(),
+
+      // Payment Fields:
+      paymentPhoneNumber: z.string().optional(),
+      paymentTrxID: z.string().optional(),
+    })
+    .refine(
+      (data) => {
+        if (paymentMethod === "bkash" || paymentMethod === "nagad") {
+          return !!data.paymentPhoneNumber;
+        }
+        return true;
+      },
+      {
+        message: "Payment phone number is required.",
+        path: ["paymentPhoneNumber"],
+      }
+    )
+    .refine(
+      (data) => {
+        if (paymentMethod === "bkash" || paymentMethod === "nagad") {
+          return !!data.paymentTrxID;
+        }
+        return true;
+      },
+      {
+        message: "Transaction ID is required.",
+        path: ["paymentTrxID"],
+      }
+    );
 
   return (
     <MYForm
@@ -300,7 +362,7 @@ const BillingDetails = () => {
               {/* Subtotal */}
               <div className="flex justify-between text-sm 2xl:text-base">
                 <span className="">Subtotal:</span>
-                <span className="font-medium">$ {subtotal.toFixed(2)}</span>
+                <span className="font-medium">৳{subtotal.toFixed(2)}</span>
               </div>
 
               {/* Shipping */}
@@ -329,7 +391,7 @@ const BillingDetails = () => {
                       </div>
 
                       <span className="text-sm 2xl:text-base font-medium">
-                        ${option.price}
+                        ৳{option.price}
                       </span>
                     </div>
                   ))}
@@ -339,30 +401,111 @@ const BillingDetails = () => {
               <Separator />
 
               {/* Total */}
-              <div className="flex justify-between text-base 2xl:text-lg font-bold">
-                <span>Total</span>
-                <span className="text-primary">$ {total.toFixed(2)}</span>
+              <div>
+                <div className="flex justify-between text-base 2xl:text-lg font-bold">
+                  <span>Total</span>
+                  <span className="text-primary">৳{total.toFixed(2)}</span>
+                </div>
+                <p className="text-sm text-end text-gray-700 dark:text-gray-200">
+                  (ডেলিভারি চার্জ বাদ দেওয়া হবে)
+                </p>
               </div>
 
               {/* Payment Method */}
+              {/* =========================================
+                      PAYMENT METHOD (Bkash + Nagad)
+                  ========================================= */}
               <Card className="border-2">
-                <CardContent className="">
-                  {/* will be dynamic */}
-                  <RadioGroup>
-                    <div className="flex items-start gap-3">
-                      <RadioGroupItem value="cod" id="cod" checked />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor="cod"
-                          className="font-medium cursor-pointer"
-                        >
-                          Cash on delivery
+                <CardContent className="space-y-4 px-4">
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(value) => setPaymentMethod(value)}
+                    className="space-y-4"
+                  >
+                    {paymentMethods.map((method) => {
+                      const isActive = paymentMethod === method.id;
+
+                      return (
+                        <div key={method.id}>
+                          {/* Radio Option */}
+                          <div className="flex items-start gap-3">
+                            <RadioGroupItem value={method.id} id={method.id} />
+                            <div className="flex-1">
+                              <Label
+                                htmlFor={method.id}
+                                className="font-medium cursor-pointer flex items-center gap-2"
+                              >
+                                <Image
+                                  src={method.logo}
+                                  alt=""
+                                  width={24}
+                                  height={24}
+                                  className="w-6 h-6"
+                                />
+                                {method.name}
+                              </Label>
+
+                              {/* Instruction Box */}
+                              {isActive && (
+                                <div className="mt-3 border border-primary/30 rounded-md bg-primary/5 p-4 text-xs 2xl:text-sm space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                                  <p>
+                                    You need to send{" "}
+                                    <strong>{shippingCost} BDT</strong>
+                                  </p>
+
+                                  <p>
+                                    <strong>Account Type:</strong>{" "}
+                                    {method.accountType}
+                                  </p>
+                                  <p>
+                                    <strong>Account Number:</strong>{" "}
+                                    {method.accountNumber}
+                                  </p>
+
+                                  {/* Phone Input */}
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium">
+                                      Your {method.name} Phone Number *
+                                    </Label>
+                                    <MYInput
+                                      name="paymentPhoneNumber"
+                                      type="number"
+                                      placeholder="01XXXXXXXXX"
+                                      className="py-[18px]"
+                                    />
+                                  </div>
+
+                                  {/* Transaction Input */}
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium">
+                                      {method.name} Transaction ID *
+                                    </Label>
+                                    <MYInput
+                                      name="paymentTrxID"
+                                      type="text"
+                                      placeholder="Transaction ID"
+                                      className="py-[18px]"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* 
+                      Cash on delivery (commented out)
+                      */}
+                    {/*
+                      <div className="flex items-start gap-3 opacity-50">
+                        <RadioGroupItem value="cod" id="cod" disabled />
+                        <Label htmlFor="cod" className="font-medium cursor-not-allowed">
+                          Cash on Delivery (Disabled)
                         </Label>
-                        <p className="text-sm 2xl:text-base mt-1">
-                          Pay with cash upon delivery.
-                        </p>
                       </div>
-                    </div>
+                      */}
                   </RadioGroup>
                 </CardContent>
               </Card>

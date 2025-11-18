@@ -7,9 +7,15 @@ type TMTInputProps = {
   name: string;
   type?: string;
   placeholder: string;
+  className?: string;
 };
 
-const MYInput = ({ name, type = "text", placeholder }: TMTInputProps) => {
+const MYInput = ({
+  name,
+  type = "text",
+  placeholder,
+  className = "",
+}: TMTInputProps) => {
   const {
     control,
     formState: { errors },
@@ -34,7 +40,7 @@ const MYInput = ({ name, type = "text", placeholder }: TMTInputProps) => {
                 placeholder-gray-400 dark:placeholder-gray-500
                 focus:outline-none hover:border-primary focus:border-primary
                 transition-all duration-200 ease-in-out bg-light-gray dark:bg-deep-dark 
-                
+                ${className}
               `}
           />
         )}
