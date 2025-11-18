@@ -59,28 +59,34 @@ const OrderDetailsModal = ({ order }: { order: TOrder }) => {
             <div className="text-sm 2xl:text-base leading-relaxed space-y-[2px]">
               <p>
                 <span className="font-semibold text-foreground">Name:</span>{" "}
-                {order.fullName}
+                {order.customerInfo.fullName}
               </p>
-              <p>
-                <span className="font-semibold text-foreground">Address:</span>{" "}
-                {order.fullAddress}
-              </p>
-              <p>
-                <span className="font-semibold text-foreground">Country:</span>{" "}
-                {order.country}
-              </p>
+
               <p>
                 <span className="font-semibold text-foreground">Phone:</span>{" "}
-                {order.phone}
+                {order.customerInfo.phone}
               </p>
-              {order.orderNotes && (
-                <p className="italic text-muted-foreground mt-1">
-                  <span className="font-semibold text-foreground not-italic">
-                    Notes:
-                  </span>{" "}
-                  “{order.orderNotes}”
-                </p>
-              )}
+
+              <p>
+                <span className="font-semibold text-foreground">
+                  Payment Method:
+                </span>{" "}
+                <span className="uppercase">{order.paymentDetails.method}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">
+                  Payment Phone Number:
+                </span>{" "}
+                <span className="uppercase">{order.paymentDetails.phone}</span>
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">
+                  Payment TransactionId:
+                </span>{" "}
+                <span className="uppercase">
+                  {order.paymentDetails.transactionId}
+                </span>
+              </p>
             </div>
           </div>
 
@@ -106,6 +112,15 @@ const OrderDetailsModal = ({ order }: { order: TOrder }) => {
               </p>
 
               <p>
+                <span className="font-semibold text-foreground">Address:</span>{" "}
+                {order.customerInfo.fullAddress}
+              </p>
+              <p>
+                <span className="font-semibold text-foreground">Country:</span>{" "}
+                {order.customerInfo.country}
+              </p>
+
+              <p>
                 <span className="font-semibold text-foreground">Status:</span>{" "}
                 <span
                   className={cn(
@@ -117,12 +132,14 @@ const OrderDetailsModal = ({ order }: { order: TOrder }) => {
                 </span>
               </p>
 
-              <p>
-                <span className="font-semibold text-foreground">
-                  Payment Method:
-                </span>{" "}
-                <span className="uppercase">{order.paymentMethod}</span>
-              </p>
+              {order.customerInfo?.orderNotes && (
+                <p className="italic text-muted-foreground mt-1">
+                  <span className="font-semibold text-foreground not-italic">
+                    Notes:
+                  </span>{" "}
+                  “{order.customerInfo?.orderNotes}”
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -135,38 +152,61 @@ const OrderDetailsModal = ({ order }: { order: TOrder }) => {
           </div>
 
           <div className="space-y-2">
-            {order.orderItems.map((item) => (
-              <div
-                key={item._id}
-                className="flex items-center justify-between gap-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-cardLightShadow dark:shadow-cardDarkShadow"
-              >
-                <div className="flex items-center gap-3">
-                  <Link href={`/shop/${item.product.slug}`}>
-                    <MyImage
-                      src={item.product.images[0]}
-                      alt={item.product.name}
-                      width={60}
-                      height={60}
-                      className="rounded-md object-cover bg-muted"
-                    />
-                  </Link>
-                  <div>
-                    <Link href={`/shop/${item.product.slug}`}>
-                      <p className="font-medium text-sm 2xl:text-base md:text-base line-clamp-2">
-                        {item.product.name}
-                      </p>
-                    </Link>
+            {order.orderItems.map((item) => {
+              // Construct variant output
+              const variantMap = {
+                weight: "",
+                size: "",
+                color: "",
+              };
 
-                    <p className="text-xs text-muted-foreground">
-                      Qty: {item.quantity}
-                    </p>
+              item.selectedVariants.forEach((v) => {
+                variantMap[v.type] = v.item.value;
+              });
+
+              return (
+                <div
+                  key={item._id}
+                  className="flex items-center justify-between gap-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-cardLightShadow dark:shadow-cardDarkShadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <Link href={`/shop/${item.product.slug}`}>
+                      <MyImage
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        width={60}
+                        height={60}
+                        className="rounded-md object-cover bg-muted"
+                      />
+                    </Link>
+                    <div>
+                      <div>
+                        <Link href={`/shop/${item.product.slug}`}>
+                          <p className="font-medium text-sm 2xl:text-base md:text-base line-clamp-2">
+                            {item.product.name}
+                          </p>
+                        </Link>
+                        <p className="text-xs 2xl:text-sm text-muted-foreground">
+                          Qty: {item.quantity}
+                        </p>
+                      </div>
+
+                      {/* Variant List */}
+                      <div className="text-xs 2xl:text-sm text-muted-foreground leading-4 mt-1">
+                        {variantMap.weight && (
+                          <p>weight: {variantMap.weight}</p>
+                        )}
+                        {variantMap.size && <p>size: {variantMap.size}</p>}
+                        {variantMap.color && <p>color: {variantMap.color}</p>}
+                      </div>
+                    </div>
                   </div>
+                  <p className="font-semibold text-sm 2xl:text-base md:text-base">
+                    ৳{item.unitSellingPrice * item.quantity}
+                  </p>
                 </div>
-                <p className="font-semibold text-sm 2xl:text-base md:text-base">
-                  ${item.product.sellingPrice * item.quantity}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -174,19 +214,23 @@ const OrderDetailsModal = ({ order }: { order: TOrder }) => {
         <div className="space-y-2 text-sm 2xl:text-base md:text-base mt-4 mb-2">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Subtotal:</span>
-            <span className="font-medium">${order.subtotal.toFixed(2)}</span>
+            <span className="font-medium">৳{order.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Shipping:</span>
             <span className="font-medium">
-              ${(order.total - order.subtotal).toFixed(2)}
+              ৳{(order.total - order.subtotal).toFixed(2)}
             </span>
           </div>
           <Separator />
+
           <div className="flex justify-between font-semibold text-base">
             <span>Total:</span>
-            <span>${order.total.toFixed(2)}</span>
+            <span>৳{order.total.toFixed(2)}</span>
           </div>
+          <p className="text-sm text-end text-gray-700 dark:text-gray-200">
+            (ডেলিভারি চার্জ বাদ দেওয়া হবে)
+          </p>
         </div>
       </DialogContent>
     </Dialog>

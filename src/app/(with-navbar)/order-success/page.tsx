@@ -52,8 +52,14 @@ const OrderSuccessPage = async (props: {
             <h1 className="text-xl md:text-2xl 2xl:text-3xl font-semibold">
               Order Placed Successfully!
             </h1>
-            <p className="text-sm 2xl:text-base text-gray-600 dark:text-gray-400 mt-1">
+            {/* <p className="text-sm 2xl:text-base text-gray-600 dark:text-gray-400 mt-1">
               Thank you for your order. We’ll send you a confirmation call soon.
+            </p> */}
+            {/* Bengali Message */}
+            <p className="mt-4 text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed max-w-[70ch] mx-auto">
+              PushTi Hub এর সাথে থাকায় অভিনন্দন। অতি শীঘ্রই আমাদের একজন
+              প্রতিনিধি আপনার দেয়া নাম্বারে যোগাযোগ করবে এবং আপনার অর্ডারটি
+              ডেলিভারির জন্য পাঠানো হবে।
             </p>
           </div>
 
@@ -98,7 +104,7 @@ const OrderSuccessPage = async (props: {
 
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        Payment Method
+                        Payment TransactionId
                       </p>
                       <p className="font-semibold capitalize">
                         {order.paymentDetails?.transactionId}
@@ -215,7 +221,7 @@ const OrderSuccessPage = async (props: {
                           </p>
 
                           {/* Variant List */}
-                          <div className="text-xs text-muted-foreground leading-4 mt-1">
+                          <div className="text-xs 2xl:text-sm text-muted-foreground leading-4 mt-1">
                             {variantMap.weight && (
                               <p>weight: {variantMap.weight}</p>
                             )}

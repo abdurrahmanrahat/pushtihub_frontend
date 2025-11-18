@@ -39,7 +39,7 @@ export const adminSidebarItems = [
   },
   {
     text: "Manage Orders",
-    href: "/dashboard/admin/manage-orders",
+    href: "/dashboard/admin/manage-orders?status=pending",
     icon: Package,
   },
   {

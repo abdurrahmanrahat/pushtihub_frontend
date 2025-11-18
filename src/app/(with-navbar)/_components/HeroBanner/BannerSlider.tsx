@@ -107,7 +107,7 @@ export default function BannerSlider() {
   };
 
   return (
-    <div className="relative w-full h-[360px] md:h-[420px] lg:h-full rounded-lg overflow-hidden group bg-gradient-to-br from-deep-dark to-deep-dark/95">
+    <div className="relative w-full h-[390px] md:h-[420px] lg:h-full rounded-lg overflow-hidden group bg-gradient-to-br from-deep-dark to-deep-dark/95">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={currentSlide}
@@ -156,7 +156,7 @@ export default function BannerSlider() {
             transition={{ delay: 0.3, duration: 0.6 }}
             className="flex-1 flex justify-center items-center mt-6 md:mt-0 z-10"
           >
-            <div className="relative w-[240px] md:w-[320px] lg:w-[400px] h-[160px] md:h-[240px] lg:h-[280px] rounded-lg">
+            <div className="relative w-[240px] md:w-[320px] lg:w-[400px] h-[180px] md:h-[250px] lg:h-[300px] rounded-lg">
               <Image
                 src={slides[currentSlide].image}
                 alt={slides[currentSlide].title}
