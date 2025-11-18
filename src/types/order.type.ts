@@ -16,8 +16,8 @@ export type TOrderItem = {
 
   selectedVariants: TSelectedVariant[];
 
-  unitSellingPrice: number | null;
-  unitPrice: number | null;
+  unitSellingPrice: number;
+  unitPrice: number;
   lineTotal: number;
 };
 

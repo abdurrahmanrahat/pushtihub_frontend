@@ -4,6 +4,7 @@ import MyImage from "@/components/shared/Ui/Image/MyImage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { TOrderItem } from "@/types/order.type";
 import { formatDateFromIOS } from "@/utils/date";
 import {
   Calendar,
@@ -33,10 +34,11 @@ const OrderSuccessPage = async (props: {
   if (!orderId) redirect("/shop");
 
   const res = await getSingleOrderFromDB(orderId);
-
   if (!res?.data) redirect("/shop");
 
   const order = res.data;
+
+  const customer = order.customerInfo;
 
   return (
     <div className="min-h-screen">
@@ -51,8 +53,7 @@ const OrderSuccessPage = async (props: {
               Order Placed Successfully!
             </h1>
             <p className="text-sm 2xl:text-base text-gray-600 dark:text-gray-400 mt-1">
-              Thank you for your order. We&apos;ll send you a confirmation call
-              shortly.
+              Thank you for your order. We’ll send you a confirmation call soon.
             </p>
           </div>
 
@@ -67,43 +68,70 @@ const OrderSuccessPage = async (props: {
                     <CardTitle>Order Details</CardTitle>
                   </div>
                 </CardHeader>
+
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-sm 2xl:text-base text-muted-foreground mb-1">
+                      <p className="text-sm text-muted-foreground mb-1">
                         Order Number
                       </p>
-                      <p className="font-semibold">{order.orderNumber}</p>
+                      <p className="font-semibold">{order?.orderNumber}</p>
                     </div>
+
                     <div>
-                      <p className="text-sm 2xl:text-base text-muted-foreground mb-1">
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Payment Method
+                      </p>
+                      <p className="font-semibold capitalize">
+                        {order.paymentDetails?.method}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Payment Number
+                      </p>
+                      <p className="font-semibold capitalize">
+                        {order.paymentDetails?.phone}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">
+                        Payment Method
+                      </p>
+                      <p className="font-semibold capitalize">
+                        {order.paymentDetails?.transactionId}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">
                         Order Date
                       </p>
                       <p className="font-semibold">
                         {formatDateFromIOS(order.createdAt)}
-                        {/* {new Date(order.createdAt).toLocaleDateString("en-GB")} */}
                       </p>
                     </div>
+
                     <div>
-                      <p className="text-sm 2xl:text-base text-muted-foreground mb-1">
-                        Payment Method
-                      </p>
-                      <p className="font-semibold">{order.paymentMethod}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm 2xl:text-base text-muted-foreground mb-1">
+                      <p className="text-sm text-muted-foreground mb-1">
                         Status
                       </p>
                       <p
                         className={`font-semibold ${
-                          order.status === "PENDING"
+                          order.status === "pending"
                             ? "text-yellow-600"
-                            : order.status === "COMPLETED"
+                            : order.status === "processing"
+                            ? "text-blue-600"
+                            : order.status === "shipped"
+                            ? "text-indigo-600"
+                            : order.status === "delivered"
                             ? "text-green-600"
                             : "text-red-600"
                         }`}
                       >
-                        {order.status}
+                        {order.status.toUpperCase()}
                       </p>
                     </div>
                   </div>
@@ -118,19 +146,20 @@ const OrderSuccessPage = async (props: {
                     <CardTitle>Shipping Information</CardTitle>
                   </div>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-muted-foreground mt-0.5" />
                     <div>
-                      <p className="font-medium">{order.fullName}</p>
-                      <p className="text-sm 2xl:text-base text-muted-foreground">
-                        {order.fullAddress}
+                      <p className="font-medium">{customer.fullName}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {customer.fullAddress}
                       </p>
-                      <p className="text-sm 2xl:text-base text-muted-foreground">
-                        {order.country}
+                      <p className="text-sm text-muted-foreground">
+                        {customer.country}
                       </p>
-                      <p className="text-sm 2xl:text-base text-muted-foreground">
-                        {order.phone}
+                      <p className="text-sm text-muted-foreground">
+                        {customer.phone}
                       </p>
                     </div>
                   </div>
@@ -141,7 +170,7 @@ const OrderSuccessPage = async (props: {
                       <p className="font-medium text-primary">
                         Estimated Delivery
                       </p>
-                      <p className="text-sm 2xl:text-base">
+                      <p className="text-sm">
                         {order.shippingOption === "dhaka"
                           ? "1–2 Days (Inside Dhaka)"
                           : "2–4 Days (Outside Dhaka)"}
@@ -151,85 +180,114 @@ const OrderSuccessPage = async (props: {
                 </CardContent>
               </Card>
 
-              {/* Order Items */}
+              {/* Ordered Items */}
               <Card>
                 <CardHeader>
                   <CardTitle>Order Items</CardTitle>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
-                  {order.orderItems.map((item: any) => (
-                    <div key={item._id} className="flex gap-2 md:gap-4">
-                      <MyImage
-                        src={item.product.images[0]}
-                        alt={item.product.name}
-                        width={80}
-                        height={80}
-                        className="w-20 h-20 rounded object-cover bg-muted"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm 2xl:text-base md:text-base font-medium line-clamp-2">
-                          {item.product.name}
-                        </p>
-                        <p className="text-sm 2xl:text-base text-muted-foreground">
-                          Qty: {item.quantity}
-                        </p>
+                  {order.orderItems.map((item: TOrderItem, index: number) => {
+                    // Construct variant output
+                    const variantMap = {
+                      weight: "",
+                      size: "",
+                      color: "",
+                    };
+
+                    item.selectedVariants.forEach((v) => {
+                      variantMap[v.type] = v.item.value;
+                    });
+
+                    return (
+                      <div key={item._id || index} className="flex gap-3">
+                        <MyImage
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 rounded object-cover bg-muted"
+                        />
+
+                        <div className="flex-1">
+                          <p className="text-sm font-medium line-clamp-2">
+                            {item.product.name}
+                          </p>
+
+                          {/* Variant List */}
+                          <div className="text-xs text-muted-foreground leading-4 mt-1">
+                            {variantMap.weight && (
+                              <p>weight: {variantMap.weight}</p>
+                            )}
+                            {variantMap.size && <p>size: {variantMap.size}</p>}
+                            {variantMap.color && (
+                              <p>color: {variantMap.color}</p>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Qty: {item.quantity}
+                          </p>
+                        </div>
+
+                        <span className="font-medium">
+                          ৳{(item.unitSellingPrice * item.quantity).toFixed(2)}
+                        </span>
                       </div>
-                      <span className="font-medium">
-                        $
-                        {(item.product.sellingPrice * item.quantity).toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </CardContent>
               </Card>
             </div>
 
             {/* Right Section */}
             <div className="space-y-6">
+              {/* Summary */}
               <Card>
                 <CardHeader>
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 -mt-2">
-                  <div className="flex justify-between text-sm 2xl:text-base">
+
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal:</span>
                     <span className="font-medium">
-                      ${order.subtotal.toFixed(2)}
+                      ৳{order.subtotal.toFixed(2)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm 2xl:text-base">
+
+                  <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping:</span>
                     <span className="font-medium">
-                      ${(order.total - order.subtotal).toFixed(2)}
+                      ৳{order.shippingCost.toFixed(2)}
                     </span>
                   </div>
+
                   <Separator />
+
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total:</span>
-                    <span>${order.total.toFixed(2)}</span>
+                    <span>৳{order.total.toFixed(2)}</span>
                   </div>
                 </CardContent>
               </Card>
 
               <div className="flex flex-col gap-4">
-                <Link href="/shop">
-                  <Button size="lg" className="w-full">
-                    Continue Shopping
-                  </Button>
-                </Link>
+                <Button size="lg" asChild>
+                  <Link href="/shop">Continue Shopping</Link>
+                </Button>
 
-                {/* Invoice Download */}
                 <InvoiceDownloadButton order={order} />
               </div>
 
               <Card>
-                <CardHeader className="">
+                <CardHeader>
                   <CardTitle className="text-base">Need Help?</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 -mt-4">
-                  <p className="text-sm 2xl:text-base text-muted-foreground">
-                    Contact our customer support team for any questions about
-                    your order.
+
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Contact our support team for order-related help.
                   </p>
                   <Button variant="outline" className="w-full">
                     <PhoneCall className="h-4 w-4 mr-2" />

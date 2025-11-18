@@ -14,27 +14,22 @@ import ProductActions from "./ProductActions";
 const getDefaultSelected = (product: TProduct): TSelectedVariant[] => {
   const selections: TSelectedVariant[] = [];
 
-  // PRIMARY — full variant item
+  // PRIMARY (full object)
   if (product.variants.primary) {
     selections.push({
       type: product.variants.primary.type,
-      item: product.variants.primary.items[0],
+      item: { ...product.variants.primary.items[0] },
     });
   }
 
-  // SECONDARY — only value exists → pad the missing fields
+  // SECONDARY (value ONLY)
   const sec = product.variants.secondary;
   if (sec) {
     Object.entries(sec).forEach(([key, values]) => {
       if (values.length > 0) {
         selections.push({
           type: key as any,
-          item: {
-            value: values[0],
-            price: 0,
-            sellingPrice: 0,
-            stock: Number.MAX_SAFE_INTEGER, // unlimited stock
-          },
+          item: { value: values[0] }, // ONLY value
         });
       }
     });
@@ -62,18 +57,17 @@ const ProductShortSummary = ({ product }: { product: TProduct }) => {
       (v) => v.type === primary.type
     );
 
-    const selectedItem = selectedPrimary?.item;
-
-    const sellingPrice = selectedItem?.sellingPrice ?? 0;
-    const originalPrice = selectedItem?.price ?? 0;
-    const totalStock = selectedItem?.stock ?? 0;
+    const sel = selectedPrimary?.item;
 
     return {
-      sellingPrice,
-      originalPrice,
-      totalStock,
+      sellingPrice: sel?.sellingPrice ?? 0,
+      originalPrice: sel?.price ?? 0,
+      totalStock: sel?.stock ?? 0,
       discountTk:
-        originalPrice > sellingPrice ? originalPrice - sellingPrice : 0,
+        sel?.price && sel?.sellingPrice && sel.price > sel.sellingPrice
+          ? sel.price - sel.sellingPrice
+          : 0,
+      selectedPrimary,
     };
   }, [selectedVariants, primary.type]);
 
@@ -88,13 +82,8 @@ const ProductShortSummary = ({ product }: { product: TProduct }) => {
               type,
               item:
                 type === primary.type
-                  ? primary.items[valueOrIndex as number] // PRIMARY FULL ITEM
-                  : {
-                      value: valueOrIndex as string,
-                      price: 0,
-                      sellingPrice: 0,
-                      stock: Number.MAX_SAFE_INTEGER,
-                    },
+                  ? { ...primary.items[valueOrIndex as number] } // full object
+                  : { value: valueOrIndex as string }, // only value
             }
           : v
       )

@@ -65,6 +65,7 @@ const BillingDetails = () => {
   const [shippingOption, setShippingOption] = useState(shipOption || "dhaka");
 
   const cartItems = useAppSelector((state) => state.cart.items);
+  console.log("cartItems", cartItems);
 
   const router = useRouter();
 
@@ -72,7 +73,9 @@ const BillingDetails = () => {
 
   const subtotal = cartItems.reduce(
     (sum, item) =>
-      sum + item.selectedVariants[0].item.sellingPrice * item.quantity,
+      ((sum +
+        (item.selectedVariants[0].item.sellingPrice as number)) as number) *
+      item.quantity,
     0
   );
 
@@ -81,8 +84,8 @@ const BillingDetails = () => {
     quantity: item.quantity,
 
     selectedVariants: item.selectedVariants, // << IMPORTANT
-    unitSellingPrice: item.selectedVariants[0].item.sellingPrice ?? null,
-    unitPrice: item.selectedVariants[0].item.price ?? null,
+    unitSellingPrice: item.selectedVariants[0].item.sellingPrice ?? 0,
+    unitPrice: item.selectedVariants[0].item.price ?? 0,
     lineTotal:
       (item.selectedVariants[0].item.sellingPrice ?? 0) * item.quantity,
   }));
@@ -121,6 +124,8 @@ const BillingDetails = () => {
     // send to db
     try {
       const res = await createOrderInDB(orderData);
+      console.log("res", res);
+
       if (res?.success) {
         toast.success("Order place successfully!");
         router.push(`/order-success?orderId=${res.data._id}`);
@@ -347,7 +352,8 @@ const BillingDetails = () => {
                           <span className="text-sm 2xl:text-base font-medium">
                             ৳{" "}
                             {(
-                              primaryVariant.sellingPrice * item.quantity
+                              (primaryVariant.sellingPrice as number) *
+                              item.quantity
                             ).toFixed(2)}
                           </span>
                         </div>

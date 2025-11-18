@@ -129,19 +129,19 @@ const Footer = () => {
               <li className="flex items-center group">
                 <Phone className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
                 <a
-                  href="tel:+12345678900"
+                  href="tel:+8801332641071"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm 2xl:text-base"
                 >
-                  +1 (234) 567-8900
+                  +880 1332-641071
                 </a>
               </li>
               <li className="flex items-center group">
                 <Mail className="h-5 w-5 text-primary mr-3 flex-shrink-0" />
                 <a
-                  href="mailto:support@Pushtihub.com"
+                  href="mailto:contact.pushtihub@gmail.com"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm 2xl:text-base"
                 >
-                  support@Pushtihub.com
+                  contact.pushtihub@gmail.com
                 </a>
               </li>
             </ul>
