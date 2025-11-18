@@ -75,8 +75,9 @@ const PendingOrdersTable = async () => {
                 <TableHeader className="">
                   <TableRow className="">
                     <TableHead className="">No</TableHead>
-                    <TableHead className="">Username</TableHead>
-                    <TableHead>Phone Number</TableHead>
+                    <TableHead className="">Payment Method</TableHead>
+                    <TableHead>P. Phone Number</TableHead>
+                    <TableHead>P. Tranx ID</TableHead>
                     <TableHead>Total</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-center">Action</TableHead>
@@ -93,10 +94,13 @@ const PendingOrdersTable = async () => {
                       >
                         <TableCell>{order.orderNumber}</TableCell>
                         <TableCell className="font-medium">
-                          {order.fullName}
+                          {order.paymentDetails.method}
                         </TableCell>
-                        <TableCell>{order.phone}</TableCell>
-                        <TableCell>${order.total}</TableCell>
+                        <TableCell>{order.paymentDetails.phone}</TableCell>
+                        <TableCell>
+                          {order.paymentDetails.transactionId}
+                        </TableCell>
+                        <TableCell>৳{order.total}</TableCell>
                         <TableCell>
                           <span
                             className={cn(

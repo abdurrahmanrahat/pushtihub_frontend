@@ -48,7 +48,7 @@ export default function CartSheet() {
   ------------------------------------ */
   const subtotal = cartItems.reduce((sum, item) => {
     const primary = item.selectedVariants[0].item;
-    return sum + primary.sellingPrice * item.quantity;
+    return sum + (primary.sellingPrice as number) * item.quantity;
   }, 0);
 
   const shippingCost =

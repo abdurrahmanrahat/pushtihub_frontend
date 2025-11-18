@@ -6,10 +6,22 @@ type TSearchProductCardProps = {
   onCardClick: (productSlug: string) => void;
 };
 
+/* ------------------------------
+   Helpers
+------------------------------- */
+const getFirstPrimaryItem = (product: TProduct) => {
+  return product.variants?.primary?.items?.[0];
+};
+
 const SearchProductCard = ({
   product,
   onCardClick,
 }: TSearchProductCardProps) => {
+  const firstItem = getFirstPrimaryItem(product);
+
+  const sellingPrice = firstItem?.sellingPrice;
+  const originalPrice = firstItem?.price;
+
   return (
     <div
       className="grid grid-cols-12 gap-2 items-center cursor-pointer"
@@ -30,13 +42,25 @@ const SearchProductCard = ({
           {product.name}
         </h3>
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <span className="text-sm 2xl:text-base font-semibold text-primary">
             ${product.sellingPrice.toFixed(2)}
           </span>
           {product.price > product.sellingPrice && (
             <span className="text-xs 2xl:text-sm text-gray-600 dark:text-gray-400 line-through">
               ${product.price.toFixed(2)}
+            </span>
+          )}
+        </div> */}
+        {/* sellingPrice (value) */}
+        <div className="flex gap-1 items-center">
+          <span className="text-sm md:text-base 2xl:text-lg font-semibold text-primary">
+            ৳{sellingPrice}
+          </span>
+          {/* Original Price (del) */}
+          {originalPrice && originalPrice > sellingPrice && (
+            <span className="text-xs md:text-sm 2xl:text-base text-gray-600 dark:text-gray-400 line-through">
+              ৳{originalPrice}
             </span>
           )}
         </div>

@@ -35,7 +35,7 @@ const CartLists = () => {
   // SUBTOTAL => sum of item.selectedVariants[0].item.sellingPrice × quantity
   const subtotal = cartItems.reduce((total, item) => {
     const primary = item.selectedVariants[0]?.item;
-    return total + primary.sellingPrice * item.quantity;
+    return total + (primary.sellingPrice as number) * item.quantity;
   }, 0);
 
   const shippingCost =

@@ -19,25 +19,25 @@ const quickLinks = [
 
 const categories = [
   {
-    label: "Smartphones & Accessories",
-    href: "/shop?category=smartphones-and-accessories",
+    label: "Nuts",
+    href: "/shop?category=nuts",
   },
   {
-    label: "Laptops & Computers",
-    href: "/shop?category=laptops-and-computers",
+    label: "Honey",
+    href: "/shop?category=honey",
   },
   {
-    label: "Smart Wearables",
-    href: "/shop?category=smart-wearables",
+    label: "Seeds",
+    href: "/shop?category=seeds",
   },
   {
-    label: "Gaming & Entertainment",
-    href: "/shop?category=gaming-and-entertainment",
+    label: "Dates",
+    href: "/shop?category=dates",
   },
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: "#" },
+  { icon: Facebook, href: "https://www.facebook.com/pushtihub" },
   { icon: Instagram, href: "#" },
   { icon: Twitter, href: "#" },
 ];
@@ -54,8 +54,8 @@ const Footer = () => {
             </Link>
 
             <p className="text-muted-foreground leading-relaxed text-sm 2xl:text-base">
-              Your trusted source for discover genuine electronic parts and
-              accessories for every device.
+              প্রতিদিনের সুস্থ জীবনের জন্য পুষ্টিকর, বিশ্বাসযোগ্য ও মানসম্মত
+              খাদ্য পৌঁছে দেওয়াই আমাদের দায়িত্ব।
             </p>
             <div className="flex space-x-3 pt-2">
               {socialLinks.map(({ icon: Icon, href }, i) => (
@@ -123,7 +123,7 @@ const Footer = () => {
               <li className="flex items-start group">
                 <MapPin className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                 <span className="text-muted-foreground text-sm 2xl:text-base leading-relaxed">
-                  123 Repair Street, Electronics District, 12345
+                  123 Repair Street, Azimpur, New Market
                 </span>
               </li>
               <li className="flex items-center group">

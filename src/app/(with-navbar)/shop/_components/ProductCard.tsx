@@ -11,14 +11,14 @@ import Link from "next/link";
    Helpers
 ------------------------------- */
 const getFirstPrimaryItem = (product: TProduct) => {
-  return product.variants?.primary?.items?.[0] ?? null;
+  return product.variants?.primary?.items?.[0];
 };
 
 export const ProductCard = ({ product }: { product: TProduct }) => {
   const firstItem = getFirstPrimaryItem(product);
 
-  const sellingPrice = firstItem?.sellingPrice ?? null;
-  const originalPrice = firstItem?.price ?? null;
+  const sellingPrice = firstItem?.sellingPrice;
+  const originalPrice = firstItem?.price;
 
   const discountTk =
     originalPrice && sellingPrice && originalPrice > sellingPrice
