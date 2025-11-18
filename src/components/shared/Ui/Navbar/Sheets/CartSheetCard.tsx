@@ -14,11 +14,30 @@ import { toast } from "sonner";
 const CartSheetCard = ({ item }: { item: TCartItem }) => {
   const dispatch = useAppDispatch();
 
+  /* ----------------------------------
+     PRIMARY VARIANT (ALWAYS index 0)
+  ----------------------------------- */
   const primary = item.selectedVariants[0].item;
 
+  const primaryStock = primary.stock ?? 0;
+  const primaryPrice = primary.sellingPrice ?? 0;
+
+  /* ----------------------------------
+     SECONDARY VARIANTS
+  ----------------------------------- */
+  const secondaryVariants = item.selectedVariants.slice(1);
+
+  const variantLabel = [
+    `weight: ${primary.value}`, // always present
+    ...secondaryVariants.map((sv) => `${sv.type}: ${sv.item.value}`),
+  ].join(" | ");
+
+  /* ----------------------------------
+     UPDATE QUANTITY
+  ----------------------------------- */
   const handleUpdateQuantity = (qty: number) => {
     if (qty < 1) return toast.error("Minimum quantity is 1!");
-    if (qty > primary.stock) return toast.error("Insufficient stock!");
+    if (qty > primaryStock) return toast.error("Insufficient stock!");
 
     dispatch(
       updateQuantity({
@@ -29,6 +48,9 @@ const CartSheetCard = ({ item }: { item: TCartItem }) => {
     );
   };
 
+  /* ----------------------------------
+     REMOVE ITEM
+  ----------------------------------- */
   const handleRemove = () => {
     dispatch(
       removeFromCart({
@@ -39,11 +61,15 @@ const CartSheetCard = ({ item }: { item: TCartItem }) => {
     toast.success("Item removed from cart");
   };
 
-  const totalPrice = primary.sellingPrice * item.quantity;
+  /* ----------------------------------
+     TOTAL PRICE
+  ----------------------------------- */
+  const totalPrice = primaryPrice * item.quantity;
 
   return (
     <Card className="p-2">
       <div className="flex gap-2">
+        {/* IMAGE */}
         <Link href={`/product/${item.product.slug}`}>
           <MyImage
             src={item.product.images[0]}
@@ -54,28 +80,28 @@ const CartSheetCard = ({ item }: { item: TCartItem }) => {
           />
         </Link>
 
-        {/* Content */}
+        {/* CONTENT */}
         <div className="flex-1 space-y-2">
           <Link href={`/product/${item.product.slug}`}>
-            <h3 className="text-sm font-medium hover:text-primary transition-colors line-clamp-2">
+            <h3 className="text-sm xl:text-base 2xl:text-lg font-medium hover:text-primary transition-colors line-clamp-2">
               {item.product.name}
             </h3>
           </Link>
 
-          {/* Variant */}
-          <p className="text-xs text-muted-foreground">
-            Variant: <span className="font-medium">{primary.value}</span>
+          {/* VARIANTS */}
+          <p className="text-xs 2xl:text-base text-muted-foreground">
+            <span className="font-medium">{variantLabel}</span>
           </p>
 
-          {/* Price */}
-          <p className="font-semibold text-sm">৳{primary.sellingPrice}</p>
+          {/* PRICE */}
+          <p className="font-semibold text-sm">৳{primaryPrice}</p>
 
-          {/* Quantity */}
+          {/* QUANTITY + REMOVE */}
           <div className="flex items-center gap-3">
             <QuantityStepper
               value={item.quantity}
               onChange={handleUpdateQuantity}
-              max={primary.stock}
+              max={primaryStock}
             />
 
             <Button
@@ -89,7 +115,7 @@ const CartSheetCard = ({ item }: { item: TCartItem }) => {
           </div>
         </div>
 
-        {/* Total */}
+        {/* TOTAL */}
         <div className="text-right">
           <p className="font-semibold">৳{totalPrice.toFixed(2)}</p>
         </div>

@@ -14,29 +14,42 @@ import { toast } from "sonner";
 const CartCard = ({ item }: { item: TCartItem }) => {
   const dispatch = useAppDispatch();
 
-  // always primary selected variant
+  /* ----------------------------------
+     PRIMARY VARIANT (ALWAYS index 0)
+  ----------------------------------- */
   const primary = item.selectedVariants[0].item;
 
-  const handleUpdateQuantity = (newQty: number) => {
-    if (newQty < 1) {
-      toast.error("You must select at least 1 quantity!");
-      return;
-    }
+  const primaryStock = primary.stock ?? 0;
+  const primaryPrice = primary.sellingPrice ?? 0;
 
-    if (newQty > primary.stock) {
-      toast.error("Insufficient stock!");
-      return;
-    }
+  /* ----------------------------------
+     SECONDARY VARIANTS
+  ----------------------------------- */
+  const secondaryVariants = item.selectedVariants.slice(1);
+
+  const variantLabel = [
+    `weight: ${primary.value}`, // always present
+    ...secondaryVariants.map((sv) => `${sv.type}: ${sv.item.value}`),
+  ].join(" | ");
+
+  /* ----------------------------------
+     UPDATE QUANTITY
+  ----------------------------------- */
+  const handleUpdateQuantity = (qty: number) => {
+    if (qty < 1) return toast.error("Minimum quantity is 1!");
+    if (qty > primaryStock) return toast.error("Insufficient stock!");
 
     dispatch(
       updateQuantity({
         productId: item.product._id,
         selectedVariants: item.selectedVariants,
-        quantity: newQty,
+        quantity: qty,
       })
     );
   };
-
+  /* ----------------------------------
+     REMOVE ITEM
+  ----------------------------------- */
   const handleRemove = () => {
     dispatch(
       removeFromCart({
@@ -47,7 +60,10 @@ const CartCard = ({ item }: { item: TCartItem }) => {
     toast.success("Item removed from cart");
   };
 
-  const totalPrice = primary.sellingPrice * item.quantity;
+  /* ----------------------------------
+     TOTAL PRICE
+  ----------------------------------- */
+  const totalPrice = primaryPrice * item.quantity;
 
   return (
     <Card className="p-2 md:p-4">
@@ -70,14 +86,14 @@ const CartCard = ({ item }: { item: TCartItem }) => {
             </h3>
           </Link>
 
-          {/* Selected Variant */}
-          <p className="text-xs text-muted-foreground">
-            Variant: <span className="font-medium">{primary.value}</span>
+          {/* VARIANTS */}
+          <p className="text-xs 2xl:text-base text-muted-foreground">
+            <span className="font-medium">{variantLabel}</span>
           </p>
 
           {/* Price */}
           <p className="font-semibold text-sm md:text-base 2xl:text-lg">
-            ৳{primary.sellingPrice}
+            ৳{primaryPrice}
           </p>
 
           {/* Quantity + Remove */}

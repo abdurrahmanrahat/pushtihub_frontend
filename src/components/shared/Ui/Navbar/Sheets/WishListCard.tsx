@@ -99,7 +99,9 @@ const WishlistCard = ({ product, onSheetClose }: TWishlistCardProps) => {
       </div>
       <div className="col-span-9 space-y-0">
         <div className="flex justify-between gap-2">
-          <h3 className="text-sm line-clamp-2">{product.name}</h3>
+          <div onClick={() => handleProductDetails(product.slug)}>
+            <h3 className="text-sm line-clamp-2">{product.name}</h3>
+          </div>
           <Button
             variant="ghost"
             size="icon"

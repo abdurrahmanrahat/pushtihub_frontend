@@ -176,7 +176,7 @@ export const InvoiceDownloadButton = ({ order }: { order: any }) => {
 
       // PDF STYLES
       styles: {
-        header: { fontSize: 24, bold: true },
+        header: { fontSize: 22, bold: true },
         shopName: { fontSize: 14, bold: true },
         subText: { fontSize: 10, color: "gray" },
         rightText: { fontSize: 10 },

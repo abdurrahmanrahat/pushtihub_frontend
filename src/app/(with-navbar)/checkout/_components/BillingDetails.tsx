@@ -65,7 +65,6 @@ const BillingDetails = () => {
   const [shippingOption, setShippingOption] = useState(shipOption || "dhaka");
 
   const cartItems = useAppSelector((state) => state.cart.items);
-  console.log("cartItems", cartItems);
 
   const router = useRouter();
 
@@ -317,8 +316,25 @@ const BillingDetails = () => {
                 ) : (
                   <>
                     {cartItems.map((item) => {
-                      const primaryVariant = item.selectedVariants[0]?.item; // FIRST SELECTED PRIMARY
-                      const variantLabel = `${primaryVariant.value}`; // ex: “220g”
+                      /* ----------------------------------
+                        PRIMARY VARIANT (ALWAYS index 0)
+                         ----------------------------------- */
+                      const primary = item.selectedVariants[0].item;
+
+                      // const primaryStock = primary.stock ?? 0;
+                      const primarySellingPrice = primary.sellingPrice ?? 0;
+
+                      /* ----------------------------------
+                        SECONDARY VARIANTS
+                        ----------------------------------- */
+                      const secondaryVariants = item.selectedVariants.slice(1);
+
+                      const variantLabel = [
+                        `weight: ${primary.value}`, // always present
+                        ...secondaryVariants.map(
+                          (sv) => `${sv.type}: ${sv.item.value}`
+                        ),
+                      ].join(" | ");
 
                       const variantKey = item.selectedVariants
                         .map((v) => `${v.type}:${v.item.value}`)
@@ -338,23 +354,22 @@ const BillingDetails = () => {
                           />
 
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm 2xl:text-base line-clamp-2">
+                            <p className="text-sm xl:text-base 2xl:text-lg line-clamp-2">
                               {item.product.name}
                             </p>
 
                             {/* Variant label: e.g., “220g” */}
-                            <p className="text-xs text-muted-foreground">
-                              {variantLabel} × {item.quantity}
+                            <p className="text-xs 2xl:text-sm text-muted-foreground">
+                              {variantLabel}
+                            </p>
+                            <p className="text-xs 2xl:text-sm text-muted-foreground">
+                              × {item.quantity}
                             </p>
                           </div>
 
                           {/* Price: primaryVariant.sellingPrice × quantity */}
                           <span className="text-sm 2xl:text-base font-medium">
-                            ৳{" "}
-                            {(
-                              (primaryVariant.sellingPrice as number) *
-                              item.quantity
-                            ).toFixed(2)}
+                            ৳ {(primarySellingPrice * item.quantity).toFixed(2)}
                           </span>
                         </div>
                       );
