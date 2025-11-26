@@ -259,6 +259,9 @@ const AddProductForm = ({
               <p className="text-sm 2xl:text-base">
                 {isImageUploading ? "Uploading..." : "Click to upload image"}
               </p>
+              <p className="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                PNG, JPG up to 2MB
+              </p>
             </label>
           ) : (
             <div className="flex flex-wrap gap-3">

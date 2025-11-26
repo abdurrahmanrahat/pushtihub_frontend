@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  List,
   MessageCircle,
   MessageSquarePlus,
   Package,
@@ -7,6 +8,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   Star,
+  Upload,
   Users,
 } from "lucide-react";
 
@@ -48,4 +50,14 @@ export const adminSidebarItems = [
     icon: Star,
   },
   { text: "Manage Users", href: "/dashboard/admin/manage-users", icon: Users },
+  {
+    text: "Upload Blog",
+    href: "/dashboard/admin/add-blog",
+    icon: Upload,
+  },
+  {
+    text: "Manage Blogs",
+    href: "/dashboard/admin/manage-blogs",
+    icon: List,
+  },
 ];

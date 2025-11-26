@@ -55,7 +55,7 @@ export default function DashboardNavbar({
       {/* Header */}
       <div className="w-full border-b border-gray-200 dark:border-gray-700 lg:border-none">
         <div className="lg:hidden">
-          <div className="w-[90%] mx-auto flex justify-between items-center py-4">
+          <div className="w-[92%] mx-auto flex justify-between items-center ">
             <div>
               <Link href={`/`}>
                 <MyLogo width={160} height={100} />
@@ -80,18 +80,14 @@ export default function DashboardNavbar({
         >
           <div className="h-full relative">
             {/* Logo */}
-            <div className="my-[12px] flex justify-center items-center">
-              <Link href="/">
-                {/* <Image src={IMAGES.shared.Logo} alt="Logo" /> */}
-
-                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase">
-                  Pushtihub
-                </span>
+            <div className=" flex justify-center items-center">
+              <Link href={`/`}>
+                <MyLogo width={160} height={100} />
               </Link>
             </div>
 
             {/* Mobile nav items */}
-            <nav className="mt-8">
+            <nav className="mt-4">
               <div className="space-y-[6px]">
                 {role === "user" &&
                   userSidebarItems.map((item, index) => (
@@ -105,7 +101,7 @@ export default function DashboardNavbar({
               </div>
             </nav>
 
-            <div className="absolute bottom-4 left-0 w-full z-[20]">
+            <div className="absolute bottom-2 left-0 w-full z-[20]">
               <SidebarProfile user={user} />
             </div>
           </div>

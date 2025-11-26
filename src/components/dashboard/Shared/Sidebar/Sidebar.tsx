@@ -10,7 +10,7 @@ import SidebarProfile from "./SidebarProfile";
 const Sidebar = ({ role, user }: { role: "user" | "admin"; user: TUser }) => {
   return (
     <div className="h-screen fixed border-r border-gray-200 dark:border-gray-700 ">
-      <div className="relative h-full w-full py-10 px-3 2xl:px-4">
+      <div className="relative h-full w-full py-5 px-3 2xl:px-4">
         {/* logo section */}
         <div className="flex justify-center items-center">
           <Link href={`/`}>

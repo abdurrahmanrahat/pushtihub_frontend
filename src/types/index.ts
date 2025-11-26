@@ -1,3 +1,4 @@
+export * from "./blog.type";
 export * from "./cart.type";
 export * from "./category.type";
 export * from "./common.type";
