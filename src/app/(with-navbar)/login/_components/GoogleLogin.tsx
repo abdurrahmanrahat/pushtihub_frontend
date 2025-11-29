@@ -1,5 +1,6 @@
 "use client";
 
+import { setTokensToCookies } from "@/app/actions/token";
 import { IMAGES } from "@/image-data";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/reducers/authSlice";
@@ -25,14 +26,16 @@ const GoogleLogin = () => {
           `${BACKED_URL}/auth/google?code=${authResult.code}`
         );
 
-        const { accessToken } = res.data.data;
+        const { accessToken, refreshToken } = res.data.data;
 
-        if (accessToken) {
+        if (accessToken && refreshToken) {
           const user = decodedToken(accessToken);
           dispatch(setUser({ user }));
           storeUserInfo({ accessToken }); // local storage
 
           toast.success(res.data.message);
+
+          await setTokensToCookies(accessToken, refreshToken);
 
           router.push("/");
         } else {

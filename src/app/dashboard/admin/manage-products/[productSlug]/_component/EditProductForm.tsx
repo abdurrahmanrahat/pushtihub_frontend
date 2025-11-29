@@ -120,8 +120,8 @@ const EditProductForm = ({
     try {
       const uploaded = await Promise.all(
         Array.from(files).map(async (file) => {
-          if (file.size > 1 * 1024 * 1024) {
-            toast.error(`${file.name} exceeds 1MB`);
+          if (file.size > 2 * 1024 * 1024) {
+            toast.error(`${file.name} exceeds 2MB`);
             return null;
           }
 
@@ -228,7 +228,8 @@ const EditProductForm = ({
         {/* IMAGES */}
         <div>
           <label className="font-medium text-sm 2xl:text-base">
-            Product Images <span className="text-red-600">*</span>
+            Product Images (max 5 images){" "}
+            <span className="text-red-600">*</span>
           </label>
 
           <input
@@ -254,6 +255,9 @@ const EditProductForm = ({
               />
               <p className="text-sm">
                 {isImageUploading ? "Uploading..." : "Click to upload image"}
+              </p>
+              <p className="text-xs 2xl:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                PNG, JPG up to 2MB(max 5 images)
               </p>
             </label>
           ) : (
