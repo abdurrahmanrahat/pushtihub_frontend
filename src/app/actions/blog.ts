@@ -93,7 +93,7 @@ export const addBlogToDB = async (
     // }
 
     const data = await res.json();
-    revalidateTag(tagLists.BLOG);
+    revalidateTag(tagLists.BLOG, "max");
 
     return {
       success: data?.success,
@@ -129,7 +129,7 @@ export const updateBlogInDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.BLOG);
+    revalidateTag(tagLists.BLOG, "max");
 
     return {
       success: data?.success ?? true,
@@ -162,7 +162,7 @@ export const deleteBlogFromDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.BLOG);
+    revalidateTag(tagLists.BLOG, "max");
 
     return {
       success: data?.success ?? true,
