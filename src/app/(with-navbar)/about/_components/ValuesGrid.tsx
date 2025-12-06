@@ -4,27 +4,27 @@ import { Award, Target, TrendingUp, Users } from "lucide-react";
 const values = [
   {
     icon: Target,
-    title: "Our Mission",
+    title: "আমাদের মিশন",
     description:
-      "To provide premium tech products that enhance productivity and creativity for professionals worldwide.",
+      "বাংলাদেশের মানুষকে সচেতন করা, সুপার ফুড ও পুষ্টিকর খাবার সরবরাহ করা এবং সুস্থ জীবনধারা তৈরি করতে সহায়তা করা।",
   },
   {
     icon: Users,
-    title: "Customer First",
+    title: "গ্রাহক সবার আগে",
     description:
-      "We prioritize customer satisfaction with exceptional service, quality products, and reliable support.",
+      "বিশুদ্ধ পণ্য, দ্রুত সেবা এবং নির্ভরযোগ্য সহায়তার মাধ্যমে আমরা গ্রাহকের সুস্থতা ও সন্তুষ্টিকে অগ্রাধিকার দিই।",
   },
   {
     icon: Award,
-    title: "Quality Assured",
+    title: "গুণগত মান নিশ্চিত",
     description:
-      "Every product is carefully selected and tested to meet our high standards of excellence.",
+      "প্রতিটি পণ্য কঠোর মান-নিয়ন্ত্রণের মাধ্যমে নির্বাচন করা হয়, যাতে আপনি পান বিশুদ্ধ, নিরাপদ এবং উচ্চমানের খাদ্য।",
   },
   {
     icon: TrendingUp,
-    title: "Innovation",
+    title: "নবপ্রবর্তন",
     description:
-      "We stay ahead of technology trends to bring you the latest and most innovative products.",
+      "আমরা পুষ্টি ও ফুড-টেক ট্রেন্ড অনুসরণ করে নতুন, উন্নত এবং স্বাস্থ্যকর ফুড অপশন নিয়মিত নিয়ে আসি।",
   },
 ];
 

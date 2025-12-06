@@ -1,28 +1,30 @@
 const CompanyStory = () => {
   return (
     <section className="max-w-4xl mx-auto mb-16">
-      <h2 className="text-3xl font-semibold text-foreground mb-6">Our Story</h2>
+      <h2 className="text-3xl font-semibold text-foreground mb-6">
+        আমাদের গল্প
+      </h2>
       <div className="space-y-4 text-muted-foreground leading-relaxed">
         <p>
-          Founded in 2020, Pushtihub emerged from a simple vision: to make
-          premium technology accessible to everyone. What started as a small
-          online store has grown into a trusted destination for tech
-          enthusiasts, professionals, and everyday users seeking quality gadgets
-          and accessories.
+          PushtiHub শুরু হয়েছিল একটি সহজ কিন্তু গুরুত্বপূর্ণ উদ্দেশ্য নিয়ে—
+          বাংলাদেশের মানুষকে পুষ্টিহীনতা থেকে বের করে আনা এবং সুপার ফুড ও
+          বিশুদ্ধ খাদ্যসামগ্রী সবার কাছে পৌঁছে দেওয়া। ছোট আকারে শুরু হলেও, আজ
+          এটি একটি বিশ্বস্ত ব্র্যান্ড—যারা বিশ্বাস করে সঠিক খাবারই মানুষের জীবনে
+          প্রকৃত পরিবর্তন আনে।
         </p>
+
         <p>
-          We understand that technology isn&apos;t just about
-          specifications—it&apos;s about enhancing your daily life, boosting
-          productivity, and enabling creativity. That&apos;s why we carefully
-          curate every product in our catalog, ensuring it meets our rigorous
-          standards for quality, functionality, and value.
+          আমরা জানি, খাবার শুধু পেট ভরানোর জন্য নয়—এটি শক্তি, সুস্থতা এবং জীবনের
+          মান উন্নয়নের মূল ভিত্তি। তাই আমরা প্রতিটি পণ্য অত্যন্ত যত্নের সাথে
+          নির্বাচন করি, যাতে তা হয় বিশুদ্ধ, নিরাপদ, পুষ্টিকর এবং সবার জন্য
+          উপযোগী।
         </p>
+
         <p>
-          Today, Pushtihub serves thousands of satisfied customers across the
-          globe, offering everything from cutting-edge laptops and keyboards to
-          innovative accessories and smart devices. Our commitment to
-          excellence, combined with exceptional customer service, has made us a
-          leader in the tech retail space.
+          আজ PushtiHub সারা দেশের হাজারো মানুষকে সুপার ফুড, বাদাম, ড্রাই ফুড,
+          পুষ্টিকর খাবার এবং নিত্যপ্রয়োজনীয় ফুড আইটেম সরবরাহ করছে। মানুষের
+          স্বাস্থ্য-সচেতনতা বৃদ্ধি, পুষ্টিকর খাবার সহজলভ্য করা এবং একটি সুস্থ
+          বাংলাদেশ গড়ে তোলাই আমাদের মূল লক্ষ্য।
         </p>
       </div>
     </section>

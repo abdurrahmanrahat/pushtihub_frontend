@@ -25,7 +25,7 @@ const slides: TSlide[] = [
     description: "Exclusive voucher on latest Peanut",
     image: "/images/home/banner/peanut.png",
     buttonText: "Shop Now",
-    href: "#",
+    href: "/shop/peanut-margarita",
   },
   {
     id: 2,
@@ -62,30 +62,6 @@ export default function BannerSlider() {
     return () => clearInterval(timer);
   }, [currentSlide]);
 
-  // const slideVariants = {
-  //   enter: (direction: number) => ({
-  //     x: direction > 0 ? 150 : -150,
-  //     opacity: 0,
-  //     scale: 0.98,
-  //   }),
-  //   center: {
-  //     zIndex: 1,
-  //     x: 0,
-  //     opacity: 1,
-  //     scale: 1,
-  //     transition: {
-  //       duration: 0.6,
-  //       ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
-  //     },
-  //   },
-  //   exit: (direction: number) => ({
-  //     zIndex: 0,
-  //     x: direction < 0 ? 150 : -150,
-  //     opacity: 0,
-  //     scale: 0.98,
-  //     transition: { duration: 0.4 },
-  //   }),
-  // };
   const slideVariants = {
     enter: (direction: number) => ({
       zIndex: 0, // fade-out slide below
@@ -137,7 +113,10 @@ export default function BannerSlider() {
                 {slides[currentSlide].description}
               </p>
 
-              <Link href="/shop" className="inline-block relative z-30">
+              <Link
+                href={slides[currentSlide].href}
+                className="inline-block relative z-30"
+              >
                 <Button
                   variant="outline"
                   className="mt-4 text-white border-primary hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer font-medium tracking-wide px-6 2xl:px-8 py-2 2xl:py-3 rounded-md"
@@ -157,13 +136,15 @@ export default function BannerSlider() {
             className="flex-1 flex justify-center items-center mt-6 md:mt-0 z-10"
           >
             <div className="relative w-[240px] md:w-[320px] lg:w-[400px] h-[180px] md:h-[250px] lg:h-[300px] rounded-lg">
-              <Image
-                src={slides[currentSlide].image}
-                alt={slides[currentSlide].title}
-                fill
-                className="object-cover drop-shadow-2xl rounded-lg"
-                priority
-              />
+              <Link href={slides[currentSlide].href}>
+                <Image
+                  src={slides[currentSlide].image}
+                  alt={slides[currentSlide].title}
+                  fill
+                  className="object-cover drop-shadow-2xl rounded-lg"
+                  priority
+                />
+              </Link>
             </div>
           </motion.div>
         </motion.div>
