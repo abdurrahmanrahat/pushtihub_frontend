@@ -96,7 +96,7 @@ export const addCategoryToDB = async (
     // }
 
     const data = await res.json();
-    revalidateTag(tagLists.CATEGORY);
+    revalidateTag(tagLists.CATEGORY, "max");
 
     if (data?.success) {
       return {
@@ -146,7 +146,7 @@ export const updateCategoryInDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.CATEGORY);
+    revalidateTag(tagLists.CATEGORY, "max");
 
     if (data?.success) {
       return {
@@ -191,7 +191,7 @@ export const deleteCategoryFromDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.CATEGORY);
+    revalidateTag(tagLists.CATEGORY, "max");
 
     if (data?.success) {
       return {

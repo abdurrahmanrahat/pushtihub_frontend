@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { accessAuthKey } from "./constants/authKey";
 import { decodedToken } from "./utils/jwt";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = (await cookies()).get(accessAuthKey)?.value;
 

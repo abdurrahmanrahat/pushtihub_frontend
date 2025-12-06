@@ -107,7 +107,7 @@ export const addProductToDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT);
+    revalidateTag(tagLists.PRODUCT, "max");
 
     if (data?.success) {
       return {
@@ -155,7 +155,7 @@ export const updateProductInDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT);
+    revalidateTag(tagLists.PRODUCT, "max");
 
     if (data?.success) {
       return {
@@ -200,7 +200,7 @@ export const deleteProductFromDB = async (
     }
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT);
+    revalidateTag(tagLists.PRODUCT, "max");
 
     if (data?.success) {
       return {

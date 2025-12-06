@@ -95,7 +95,7 @@ export const createOrderInDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.ORDER);
+    revalidateTag(tagLists.ORDER, "max");
 
     if (data?.success) {
       return {
@@ -135,7 +135,7 @@ export const updateOrderInDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.ORDER);
+    revalidateTag(tagLists.ORDER, "max");
 
     if (data?.success) {
       return {
@@ -169,7 +169,7 @@ export const deleteOrderFromDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.ORDER);
+    revalidateTag(tagLists.ORDER, "max");
 
     if (data?.success) {
       return {

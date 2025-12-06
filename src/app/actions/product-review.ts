@@ -24,7 +24,7 @@ export const createProductReviewToDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT_REVIEW);
+    revalidateTag(tagLists.PRODUCT_REVIEW, "max");
 
     if (data?.success) {
       return {
@@ -180,7 +180,7 @@ export const deleteReviewFromDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT_REVIEW);
+    revalidateTag(tagLists.PRODUCT_REVIEW, "max");
 
     if (data?.success) {
       return {
@@ -218,8 +218,8 @@ export const approveReviewInDB = async (
     );
 
     const data = await res.json();
-    revalidateTag(tagLists.PRODUCT_REVIEW);
-    revalidateTag(tagLists.PRODUCT);
+    revalidateTag(tagLists.PRODUCT_REVIEW, "max");
+    revalidateTag(tagLists.PRODUCT, "max");
 
     if (data?.success) {
       return {
